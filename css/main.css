@@ -423,6 +423,30 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: none;
 }
 
+@font-face {
+  font-family: "Tajawal";
+
+  font-weight: 400;
+
+  src: url(/fonts/Tajawal-Regular.ttf) format("ttf");
+}
+
+@font-face {
+  font-family: "Tajawal";
+
+  font-weight: 500;
+
+  src: url(/fonts/Tajawal-Medium.ttf) format("ttf");
+}
+
+@font-face {
+  font-family: "Tajawal";
+
+  font-weight: 600;
+
+  src: url(/fonts/Tajawal-Regular.ttf) format("ttf");
+}
+
 *, ::before, ::after {
   --tw-translate-x: 0;
   --tw-translate-y: 0;
@@ -468,17 +492,303 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-backdrop-sepia:  ;
 }
 
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.right-0 {
+  right: 0px;
+}
+
+.m-24 {
+  margin: 6rem;
+}
+
+.m-12 {
+  margin: 3rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.block {
+  display: block;
+}
+
+.flex {
+  display: flex;
+}
+
+.h-\[31\.25rem\] {
+  height: 31.25rem;
+}
+
+.h-\[6\.06rem\] {
+  height: 6.06rem;
+}
+
+.h-\[3\.75rem\] {
+  height: 3.75rem;
+}
+
+.h-32 {
+  height: 8rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.h-\[400px\] {
+  height: 400px;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.w-\[31\.25rem\] {
+  width: 31.25rem;
+}
+
+.w-\[4\.50rem\] {
+  width: 4.50rem;
+}
+
+.w-\[3\.75rem\] {
+  width: 3.75rem;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.w-\[400px\] {
+  width: 400px;
+}
+
+.w-1\/2 {
+  width: 50%;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.max-w-\[94\.50rem\] {
+  max-width: 94.50rem;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.gap-\[16\.25rem\] {
+  gap: 16.25rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-\[8\.13rem\] {
+  gap: 8.13rem;
+}
+
+.gap-\[1\.13rem\] {
+  gap: 1.13rem;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.gap-16 {
+  gap: 4rem;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.gap-\[4\.50rem\] {
+  gap: 4.50rem;
+}
+
+.gap-\[10rem\] {
+  gap: 10rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+.gap-14 {
+  gap: 3.5rem;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.rounded-\[6\.13rem\] {
+  border-radius: 6.13rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.rounded-\[4\.50rem\] {
+  border-radius: 4.50rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-4 {
+  border-width: 4px;
+}
+
+.border-8 {
+  border-width: 8px;
+}
+
+.border-b-8 {
+  border-bottom-width: 8px;
+}
+
+.border-white {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity));
+}
+
+.bg-teal-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(45 212 191 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.p-\[1\.31rem\] {
+  padding: 1.31rem;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.px-\[1\.19rem\] {
+  padding-left: 1.19rem;
+  padding-right: 1.19rem;
+}
+
+.py-3\.5 {
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.font-tajawal {
+  font-family: Tajawal, sans-serif;
+}
+
+.text-\[5rem\] {
+  font-size: 5rem;
+}
+
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
 }
 
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
 }
 
-.text-2xl {
-  font-size: 1.5rem;
-  line-height: 2rem;
+.text-\[4\.50rem\] {
+  font-size: 4.50rem;
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.shadow-\[0px_4px_4px_0px_rgba\(0\2c 0\2c 0\2c 0\.3\)\] {
+  --tw-shadow: 0px 4px 4px 0px rgba(0,0,0,0.3);
+  --tw-shadow-colored: 0px 4px 4px 0px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }

@@ -1,7 +1,11 @@
 module.exports = {
     content: ["./*.html"],
     theme: {
-    extend: {},
+    extend: {
+        fontFamily: {
+          tajawal: ["Tajawal", "sans-serif"],
+        },
+    },
   },
   plugins: [],
 }
