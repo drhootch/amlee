@@ -35,10 +35,10 @@
                     </template>
                 </div>
             </div>
-            <button @click="readWord" class="flex relative w-1/2">
+            <button @click="readWord" class="flex relative w-4/5 lg:w-1/2">
                 <div class="flex items-center justify-center">
                     <span x-show="currentImage===null" class="absolute text-2xl text-white">جاري تحميل الصورة</span>
-                    <img class="w-[500px] min-h-[300px] bg-teal-500 m-2  border-8 rounded-[4.50rem]"
+                    <img class="w-[500px] min-h-[300px] bg-teal-500 m-2  border-8 rounded-[4.50rem] object-cover"
                         x-bind:src="currentImage" />
                 </div>
                 <div class="absolute p-8 bg-white rounded-full -right-8 -top-8">
