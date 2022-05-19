@@ -19,3 +19,7 @@
       src: url(/fonts/Tajawal-Regular.ttf) format("ttf");
     }
   }
+
+[x-cloak] {
+    display: none;
+}
