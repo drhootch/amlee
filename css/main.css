@@ -671,12 +671,44 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 1rem;
 }
 
+.max-h-\[100px\] {
+  max-height: 100px;
+}
+
+.max-h-\[200px\] {
+  max-height: 200px;
+}
+
+.max-h-\[250px\] {
+  max-height: 250px;
+}
+
+.max-h-\[3050px\] {
+  max-height: 3050px;
+}
+
+.max-h-\[300px\] {
+  max-height: 300px;
+}
+
 .min-h-\[300px\] {
   min-height: 300px;
 }
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.min-h-\[200px\] {
+  min-height: 200px;
+}
+
+.min-h-\[100px\] {
+  min-height: 100px;
+}
+
+.min-h-\[500px\] {
+  min-height: 500px;
 }
 
 .w-8 {
@@ -1352,6 +1384,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
   .lg\:min-h-\[300px\] {
     min-height: 300px;
+  }
+
+  .lg\:min-h-\[500px\] {
+    min-height: 500px;
   }
 
   .lg\:w-1\/2 {
