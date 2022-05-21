@@ -124,7 +124,7 @@ document.addEventListener('alpine:init', () => {
             state: null,
             modalResult: false,
             get openModal() {
-                return (this.state==="correct" || (this.triesCount === 0 && this.correctWord.split('').every(r => this.currentTry.includes(r))) || this.triesRemaining <= 0)
+                return (this.state==="correct" || this.triesRemaining <= 0)
             },
             async generateImage() {
                 this.loadingImage = true;
@@ -134,7 +134,7 @@ document.addEventListener('alpine:init', () => {
             //Options
             triesRemaining: this.$persist(0),
             lettersCount: this.$persist(8),
-            triesCount: this.$persist(0),
+            triesCount: this.$persist(3),
             answers: [{ ar: 'ذئب', en: 'wolf' }, { ar: 'برتقال', en: 'orange' }, { ar: 'فأرة', en: 'mice' }],
             //Static
             letters: [
