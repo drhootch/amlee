@@ -671,6 +671,18 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 1rem;
 }
 
+.h-\[300px\] {
+  height: 300px;
+}
+
+.h-\[250px\] {
+  height: 250px;
+}
+
+.h-\[200px\] {
+  height: 200px;
+}
+
 .max-h-\[100px\] {
   max-height: 100px;
 }
@@ -1374,6 +1386,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
   .lg\:h-10 {
     height: 2.5rem;
+  }
+
+  .lg\:h-\[300px\] {
+    height: 300px;
   }
 
   @media (min-width: 1024px) {

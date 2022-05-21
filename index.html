@@ -15,7 +15,7 @@
     <script type="text/javascript" src="js/app.js"></script>
 </head>
 
-<body class="bg-teal-400 font-tajawal h-screen" dir="rtl">
+<body class="bg-teal-400 font-tajawal h-screen overflow-hidden" dir="rtl">
     <div x-data="game" class="flex h-full items-center justify-around" x-cloak>
         <div class="flex flex-col-reverse gap-6 lg:gap-32 justify-start items-center lg:flex-row">
             <div class="flex flex-col gap-6 lg:gap-14 justify-start items-center">
@@ -50,10 +50,10 @@
                     <p class="text-l lg:text-xl">عدد المحاولات باقية <span class="text-xl lg:text-3xl" x-text="triesRemaining"></span> من <span x-text="triesCount"></span></p>
                 </div>
             </div>
-            <button id="photo" @click="readWord" class="relative w-4/5 lg:w-1/2 lg:min-w-[500px]">
+            <button id="photo" @click="readWord" class="relative w-4/5 lg:w-1/2 h-[200px] lg:min-w-[500px] lg:h-[300px] ">
                 <div x-show="!loadingImage" x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="scale-0" x-transition:enter-end="scale-100">
-                    <img class="max-h-[300px]  lg:w-[500px] lg:min-h-[300px] bg-teal-500 m-2  border-8 rounded-4 object-cover"
+                    <img class="h-[200px] lg:w-[500px] lg:h-[300px] bg-teal-500 m-2  border-8 rounded-4 object-cover"
                         x-bind:src="currentImage" />
                 </div>
                 <div :class="loadingImage ? '-translate-y-1/2 translate-x-1/2 top-1/2 right-1/2' : '-right-2 -top-2 lg:-right-8 lg:-top-8'"
