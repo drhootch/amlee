@@ -16,7 +16,7 @@ document.addEventListener('alpine:init', () => {
                     this.nextWordClicked()
                 }
                 Alpine.nextTick(() => this.animateGame())
-                document.querySelector('#photo img').onload = () => this.loadingImage = false;
+                document.querySelector('#photo img').onload = () => this.imageIsLoading = false;
 
                 if(this.triesRemaining<=0){
                     this.modalResult = true;
@@ -127,14 +127,15 @@ document.addEventListener('alpine:init', () => {
                 return (this.state==="correct" || this.triesRemaining <= 0)
             },
             async generateImage() {
-                this.loadingImage = true;
+                this.imageIsLoading = true;
                 this.currentImage = await this.fetchImage(this.answers?.[this.currentWordIndex]?.en)
             },
-            loadingImage: false,
+            imageShow: this.$persist(true),
+            imageIsLoading: false,
             //Options
             triesRemaining: this.$persist(0),
-            lettersCount: this.$persist(8),
             triesCount: this.$persist(3),
+            lettersCount: this.$persist(8),
             answers: [{ ar: 'ذئب', en: 'wolf' }, { ar: 'برتقال', en: 'orange' }, { ar: 'فأرة', en: 'mice' }],
             //Static
             letters: [
@@ -161,7 +162,7 @@ document.addEventListener('alpine:init', () => {
                     return "يمكنك تقديم أفضل!";
                 }
 
-                return "حاول من جديد!";
+                return "لم تُوفّق!";
             },
             //Tools
             //API
