@@ -12,131 +12,110 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('game', function () {
         return {
             async init() {
-                if (this.generatedLetters === '') {
-                    this.nextWordClicked()
+                window.app = this;
+                if (window.app.game.generatedLetterz === '') {
+                    window.app.game.nextGame()
                 }
-                Alpine.nextTick(() => this.animateGame())
-                document.querySelector('#photo img').onload = () => this.imageIsLoading = false;
+                Alpine.nextTick(() => window.app.animateGame())
+                document.querySelector('#photo img').onload = () => window.app.game.imageIsLoading = false;
 
-                if(this.triesRemaining<=0){
-                    this.modalResult = true;
-                    Alpine.nextTick(() => this.animateResult())
+                if(window.app.triesRemaining<=0){
+                    window.app.showModalResult = true;
+                    Alpine.nextTick(() => window.app.animateResult())
                 }
 
-                this.lock = false;
+                window.app.lock = false;
             },
             lock: true,
-            currentWordIndex: this.$persist(0),
-            get correctWord() { return this.answers?.[this.currentWordIndex]?.ar ?? '' },
-            currentImage: this.$persist(''),
-            currentTry: this.$persist(''),
-            generatedLetters: this.$persist(''),
-            generateLetters() {
-                let tmp = this.correctWord;
-                for (let i = 0, l = this.lettersCount - tmp.length; i < l; i++) {
-                    let rdmL = '';
-                    while (rdmL === "" || tmp.includes(rdmL)) {
-                        rdmL = this.letters[Math.floor(Math.random() * this.letters.length)]
+            currentGameIndex: this.$persist(0),
+            game: {
+                state: null,
+                userInput: this.$persist(''),
+                image: this.$persist(''),
+                imageIsLoading: false,
+                generatedLetterz: this.$persist(''),
+                get correctWord() { return window.app.games?.[window.app.currentGameIndex]?.ar ?? '' },
+                insertLetter(letter) {
+                    if(window.app.lock)return;
+                    if (letter && window.app.game.userInput.length<window.app.game.correctWord.length) {
+                        let tmp = window.app.game.userInput+= letter
+                        window.app.game.userInput="";
+                        Alpine.nextTick(() => window.app.game.userInput = tmp)
                     }
-                    tmp += rdmL;
-                }
-                this.generatedLetters = this.shuffle(tmp)
-            },
-            getLetterState(letter) {
-                if(this.triesCount>0)return "";
-                return this.correctWord.includes(letter) && this.currentTry.includes(letter) ? "correct" : (
-                    this.currentTry.includes(letter) ? "wrong" : ""
-                );
-            },
-            insertLetter(letter) {
-                if(this.lock)return;
-                if (letter && this.currentTry.length<this.correctWord.length) {
-                    let tmp = this.currentTry+= letter
-                    this.currentTry="";
-                    Alpine.nextTick(() => this.currentTry = tmp)
-                }
-            },
-            removeLetter() {
-                if(this.lock)return;
-                this.state = null;
-                this.currentTry = this.currentTry.slice(0, -1);
-            },
-            enterWord() {
-                if(this.lock)return;
-                if(this.currentTry === this.correctWord)
-                {
-                    this.state = "correct";
-                    this.modalResult = true;
-                    Alpine.nextTick(() => this.animateResult())
-                }
-                else if(this.currentTry.length >= this.correctWord.length) {
-                    this.animateShake('#slots').then(()=>{
-                        if(this.state != "wrong"){
-                            this.triesRemaining--;
-                            this.state = "wrong";
-                            if(this.triesRemaining<=0){
-                                this.modalResult = true;
-                                Alpine.nextTick(() => this.animateResult())
+                },
+                removeLetter() {
+                    if(window.app.lock)return;
+                    window.app.game.state = null;
+                    window.app.game.userInput = window.app.game.userInput.slice(0, -1);
+                },
+                submit() {
+                    if(window.app.lock)return;
+                    if(window.app.game.userInput === window.app.game.correctWord)
+                    {
+                        window.app.game.state = "correct";
+                        window.app.showModalResult = true;
+                        Alpine.nextTick(() => window.app.animateResult())
+                    }
+                    else if(window.app.game.userInput.length >= window.app.game.correctWord.length) {
+                        window.app.animateShake('#slots').then(()=>{
+                            if(window.app.game.state != "wrong"){
+                                window.app.triesRemaining--;
+                                window.app.game.state = "wrong";
+                                if(window.app.triesRemaining<=0){
+                                    window.app.showModalResult = true;
+                                    Alpine.nextTick(() => window.app.animateResult())
+                                }
                             }
-                        }
-                    })
-                }
-                else {
-                    this.state = null;
-                    this.animateShake('#slots>span')
-                }
-            },
-            nextWordClicked() {
-                if(this.lock)return;
-
-                this.modalResult = false;
-                this.lock = true;
-                this.animateGame(false).then(() => {
-                    this.state = null;
-                    this.currentTry = '';
-                    this.triesRemaining = this.triesCount;
-                    this.currentWordIndex++;
-                    if (this.currentWordIndex >= this.answers.length) {
-                        this.currentWordIndex = 0;
+                        })
                     }
-                    Alpine.nextTick(() => {
-                        this.generateLetters()
-                        Alpine.nextTick(() => {
-                            this.generateImage()
-                            Alpine.nextTick(() => this.animateGame().then(() => this.lock = false))
+                    else {
+                        window.app.game.state = null;
+                        window.app.animateShake('#slots>span')
+                    }
+                },
+                nextGame() {
+                    if(window.app.lock)return;
+                    window.app.showModalResult = false;
+                    window.app.lock = true;
+                    window.app.game.showAnswer = false;
+                    window.app.animateGame(false).then(() => {
+                        window.app.game.state = null;
+                        window.app.game.userInput = '';
+                        window.app.triesRemaining = window.app.triesCount;
+                        window.app.currentGameIndex++;
+                        if (window.app.currentGameIndex >= window.app.games.length) {
+                            window.app.currentGameIndex = 0;
+                        }
+                        Alpine.nextTick(async () => {
+                            window.app.game.generatedLetterz = window.app.generateLetters(window.app.game.correctWord, window.app.lettersCount)
+                            window.app.game.imageIsLoading = true;
+                            window.app.game.image = await window.app.fetchImage(window.app.games?.[window.app.currentGameIndex]?.en)
+                            Alpine.nextTick(() => window.app.animateGame().then(() =>  window.app.lock = false))
                         })
                     })
-                })
+                },
             },
             animating: false,
             speaking: false,
-            readWord() {
+            showModalSettings: false,
+            showModalResult: false,
+            //Tools
+            readWord(word) {
                 var msg = new SpeechSynthesisUtterance()
                 msg.lang = 'ar'
-                msg.text = this.correctWord
+                msg.text = word
                 msg.onend = (event) => {
-                    this.speaking = false;
+                    window.app.speaking = false;
                 }
-                this.speaking = true;
+                window.app.speaking = true;
                 T2S.speak(msg);
             },
-            openModalSettings: false,
-            state: null,
-            modalResult: false,
-            get openModal() {
-                return (this.state==="correct" || this.triesRemaining <= 0)
-            },
-            async generateImage() {
-                this.imageIsLoading = true;
-                this.currentImage = await this.fetchImage(this.answers?.[this.currentWordIndex]?.en)
-            },
-            imageShow: this.$persist(true),
-            imageIsLoading: false,
+            games: [{ ar: 'ذئب', en: 'wolf' }, { ar: 'برتقال', en: 'orange' }, { ar: 'فأرة', en: 'mice' }],
             //Options
+            imageShow: this.$persist(true),
             triesRemaining: this.$persist(0),
             triesCount: this.$persist(3),
             lettersCount: this.$persist(8),
-            answers: [{ ar: 'ذئب', en: 'wolf' }, { ar: 'برتقال', en: 'orange' }, { ar: 'فأرة', en: 'mice' }],
             //Static
             letters: [
                 'ى', 'ئ', 'ؤ', 'آ', 'إ', 'أ', 'ء',
@@ -145,7 +124,7 @@ document.addEventListener('alpine:init', () => {
                 'ذ', 'ر', 'ة', 'و', 'ز', 'ظ', 'د',
             ],
             get resultTitle() {
-                const percent = this.triesRemaining/this.triesCount;
+                const percent = window.app.triesRemaining/window.app.triesCount;
                 if(percent === 1){
                     return "ممتاز!";
                 }
@@ -177,6 +156,19 @@ document.addEventListener('alpine:init', () => {
             isLetter(str) {
                 return str.length === 1 && str.match(/[\u0600-\u06FF]/)?.[0];
             },
+            generateLetters(includedLetters, totalLetters) {
+                let tmp = includedLetters;
+                for (let i = 0, l = totalLetters - tmp.length; i < l; i++) {
+                    let rdmL = '';
+                    while (rdmL === "" || tmp.includes(rdmL)) {
+                        rdmL = window.app.letters[Math.floor(Math.random() * window.app.letters.length)]
+                    }
+                    tmp += rdmL;
+                }
+                console.log("tmp", tmp)
+                return window.app.shuffle(tmp)
+            },
+            //Animations
             animateResult() {
                 return new Promise((resolve, reject) => {
                     var tl = anime.timeline();
@@ -206,7 +198,6 @@ document.addEventListener('alpine:init', () => {
                     tl.finished.then(resolve);
                 })
             },
-            //Animations
             animateShake(targets) {
                 return new Promise((resolve, reject) => {
                     const xMax = 16;
@@ -246,19 +237,28 @@ document.addEventListener('alpine:init', () => {
                         targets: '#photo',
                         scale: [0, '100%'],
                         easing: 'easeOutElastic(1, .4)'
-                    }).add({
+                    })
+                    .add({
                         targets: '#letters>button',
                         scale: [0, '100%'],
                         delay: function (el, i, l) {
                             return i * 100;
                         }
-                    }, '-=600').add({
+                    }, '-=600')
+                    .add({
                         targets: animateIn ? '#slots>span' : '#slots',
                         scale: [0, '100%'],
                         delay: function (el, i, l) {
                             return i * 50;
                         },
                     }, '-=1200')
+                    .add({
+                        targets: '#buttons>button',
+                        scale: [0, '100%'],
+                        delay: function (el, i, l) {
+                            return i * 50;
+                        },
+                    }, '-=600')
                     tl.finished.then(resolve);
                 })
             },

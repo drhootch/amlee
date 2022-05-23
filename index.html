@@ -9,6 +9,7 @@
     <title>أملِ لي</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/app.css">
+    <script defer src="https://unpkg.com/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -20,34 +21,34 @@
         <div class="flex flex-col-reverse gap-6 lg:gap-32 justify-start items-center lg:flex-row">
             <div class="flex flex-col gap-6 lg:gap-14 justify-start items-center">
                 <div id="slots">
-                    <template x-for="i in correctWord.length">
-                        <span x-text="currentTry?.[i-1] ?? '_'" class="text-4xl lg:text-5xl text-white"
-                            :class="{'mr-4 decoration-white decoration-8 inline-block empty' : currentTry?.[i-1] == null, 'text-red-500': state==='wrong', 'text-teal-700': state==='correct'}">
+                    <template x-for="i in game.correctWord.length">
+                        <span x-text="game.userInput?.[i-1] ?? '_'" class="text-4xl lg:text-5xl text-white"
+                            :class="{'mr-4 decoration-white decoration-8 inline-block empty' : game.userInput?.[i-1] == null, 'text-red-500': game.state==='wrong', 'text-teal-700': game.state==='correct'}">
                         </span>
                     </template>
                 </div>
                 <div id="letters" class="rtl grid grid-rows-2 grid-cols-4 gap-5"
-                    @keyup.window="insertLetter(isLetter($event.key))">
-                    <template x-for="letter in generatedLetters">
-                        <button @click.stop="insertLetter($el.innerText)" x-bind:data-state="getLetterState(letter)"
+                    @keyup.window="game.insertLetter(isLetter($event.key))">
+                    <template x-for="letter in game.generatedLetterz">
+                        <button @click.stop="game.insertLetter($el.innerText)"
                             class="flex flex-col gap-2 justify-center items-center w-10 lg:w-12 h-10 lg:h-12 px-4 py-3.5 bg-white rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.3)]">
                             <p x-text="letter" class="block text-center text-xl lg:text-3xl text-black"></p>
                         </button>
                     </template>
                 </div>
-                <div x-transition class="flex gap-4 justify-start items-start">
-                    <button @click.stop="removeLetter" @keyup.backspace.window="removeLetter"
+                <div id="buttons" class="flex gap-4 justify-start items-start">
+                    <button @click.stop="game.removeLetter" @keyup.backspace.window="game.removeLetter"
                         class="flex flex-row gap-2 justify-center items-center px-3 lg:px-6 py-1 lg:py-3 bg-teal-600 rounded-2xl">
                         <p class="block text-center text-xl lg:text-3xl text-white ">حذف</p>
                     </button>
-                    <button @click.stop="enterWord" @keyup.enter.window="enterWord"
-                        :class="currentTry.length>=correctWord.length && state!=='wrong' ? 'bg-teal-700 text-white' : 'bg-gray-500 text-gray-200'"
+                    <button @click.stop="game.submit" @keyup.enter.window="game.submit"
+                        :class="game.userInput.length>=game.correctWord.length && game.state!=='wrong' ? 'bg-teal-700 text-white' : 'bg-gray-500 text-gray-200'"
                         class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-3 rounded-2xl">
                         <p class="block text-center text-xl lg:text-3xl">إدخال</p>
                     </button>
                 </div>
             </div>
-            <button id="photo" @click.stop="readWord" :class="!imageIsLoading ? 'w-4/5' : 'w-full'"
+            <button id="photo" @click.stop="readWord(game.correctWord)" :class="!game.imageIsLoading ? 'w-4/5' : 'w-full'"
                 class="flex gap-3 items-center justify-center flex-col lg:w-1/2 lg:min-w-[500px] lg:h-[300px]">
                 <div
                     class="transition flex gap-4 shadow-lg text-white w-fit px-4 lg:px-6 py-1 lg:py-3 bg-teal-700 rounded-2xl items-center">
@@ -58,17 +59,17 @@
                     </svg>
                     <p class="text-xl lg:text-3xl">استمع واكتب</p>
                 </div>
-                <div x-show="imageShow && !imageIsLoading" x-transition:enter="transition ease-out duration-300"
+                <div x-show="imageShow && !game.imageIsLoading" x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="scale-0" x-transition:enter-end="scale-100">
                     <img class="h-[200px] lg:w-[500px] lg:h-[300px] bg-teal-500 m-2  border-8 rounded-4 object-cover"
-                        x-bind:src="currentImage" />
+                        x-bind:src="game.image" />
                 </div>
                 <div id="triesHearts" class="transition flex flex-row gap-2 justify-center items-start">
                     <template x-for="i in parseInt(triesCount)">
                         <svg class="w-8 h-8 lg:w-12 lg:h-12" viewBox="-4 -4 52 46" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path class="transition"
-                                :class="i*20<=(triesRemaining/triesCount)*100 ? 'correct fill-teal-500 stroke-teal-600 stroke-[4px]' : 'wrong fill-white opacity-50'"
+                                :class="i*(1/triesCount)<=(triesRemaining/triesCount) ? 'correct fill-teal-500 stroke-teal-600 stroke-[4px]' : 'wrong fill-white opacity-50'"
                                 d="M11.4299 0C5.21768 0 0.179932 4.97041 0.179932 11.1027C0.179932 16.0529 2.14868 27.8016 21.5279 39.6781C21.8751 39.8886 22.2736 40 22.6799 40C23.0863 40 23.4848 39.8886 23.8319 39.6781C43.2112 27.8016 45.1799 16.0529 45.1799 11.1027C45.1799 4.97041 40.1422 0 33.9299 0C27.7177 0 22.6799 6.7289 22.6799 6.7289C22.6799 6.7289 17.6422 0 11.4299 0Z" />
                         </svg>
                     </template>
@@ -85,7 +86,7 @@
                 </svg>
                 <p class="block text-center text-l lg:text-3xl text-white">أملِ لي</p>
             </div>
-            <button @click.stop="openModalSettings=true" class="mr-4 lg:mr-8">
+            <button @click.stop="showModalSettings=true" class="mr-4 lg:mr-8">
                 <svg class="w-4 lg:w-8" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M29.3906 3.28125C28.1 -1.09375 21.9 -1.09375 20.6094 3.28125L20.2969 4.34375C20.104 4.99873 19.767 5.60225 19.3106 6.11004C18.8542 6.61783 18.2898 7.01702 17.659 7.27832C17.0282 7.53963 16.347 7.65644 15.6651 7.62018C14.9833 7.58391 14.3183 7.3955 13.7187 7.06875L12.75 6.5375C8.74062 4.35625 4.35625 8.74063 6.54062 12.7469L7.06875 13.7187C8.4625 16.2812 7.14062 19.4719 4.34375 20.2969L3.28125 20.6094C-1.09375 21.9 -1.09375 28.1 3.28125 29.3906L4.34375 29.7031C4.99873 29.896 5.60225 30.233 6.11004 30.6894C6.61783 31.1458 7.01702 31.7102 7.27832 32.341C7.53963 32.9718 7.65644 33.653 7.62018 34.3349C7.58391 35.0167 7.3955 35.6817 7.06875 36.2812L6.5375 37.25C4.35625 41.2594 8.74063 45.6437 12.7469 43.4594L13.7187 42.9312C14.3183 42.6045 14.9833 42.4161 15.6651 42.3798C16.347 42.3436 17.0282 42.4604 17.659 42.7217C18.2898 42.983 18.8542 43.3822 19.3106 43.89C19.767 44.3978 20.104 45.0013 20.2969 45.6562L20.6094 46.7187C21.9 51.0937 28.1 51.0937 29.3906 46.7187L29.7031 45.6562C29.896 45.0013 30.233 44.3978 30.6894 43.89C31.1458 43.3822 31.7102 42.983 32.341 42.7217C32.9718 42.4604 33.653 42.3436 34.3349 42.3798C35.0167 42.4161 35.6817 42.6045 36.2812 42.9312L37.25 43.4625C41.2594 45.6438 45.6437 41.2594 43.4594 37.2531L42.9312 36.2812C42.6045 35.6817 42.4161 35.0167 42.3798 34.3349C42.3436 33.653 42.4604 32.9718 42.7217 32.341C42.983 31.7102 43.3822 31.1458 43.89 30.6894C44.3978 30.233 45.0013 29.896 45.6562 29.7031L46.7187 29.3906C51.0937 28.1 51.0937 21.9 46.7187 20.6094L45.6562 20.2969C45.0013 20.104 44.3978 19.767 43.89 19.3106C43.3822 18.8542 42.983 18.2898 42.7217 17.659C42.4604 17.0282 42.3436 16.347 42.3798 15.6651C42.4161 14.9833 42.6045 14.3183 42.9312 13.7187L43.4625 12.75C45.6438 8.74062 41.2594 4.35625 37.2531 6.54062L36.2812 7.06875C35.6817 7.3955 35.0167 7.58391 34.3349 7.62018C33.653 7.65644 32.9718 7.53963 32.341 7.27832C31.7102 7.01702 31.1458 6.61783 30.6894 6.11004C30.233 5.60225 29.896 4.99873 29.7031 4.34375L29.3906 3.28125V3.28125ZM25 34.1563C22.5716 34.1563 20.2427 33.1916 18.5256 31.4744C16.8084 29.7573 15.8438 27.4284 15.8438 25C15.8438 22.5716 16.8084 20.2427 18.5256 18.5256C20.2427 16.8084 22.5716 15.8438 25 15.8438C27.4276 15.8438 29.7557 16.8081 31.4722 18.5246C33.1888 20.2412 34.1531 22.5693 34.1531 24.9969C34.1531 27.4244 33.1888 29.7526 31.4722 31.4691C29.7557 33.1857 27.4276 34.15 25 34.15V34.1563Z"
@@ -95,21 +96,21 @@
         </div>
 
         <!-- Modal -->
-        <div x-show="modalResult" @keydown.escape.prevent.stop="nextWordClicked" role="dialog" aria-modal="true"
+        <div x-show="showModalResult" @keydown.escape.prevent.stop="game.nextGame" role="dialog" aria-modal="true"
             x-id="['modal-title']" :aria-labelledby="$id('modal-title')" class="fixed inset-0 overflow-y-auto z-10">
             <!-- Overlay -->
-            <div x-show="modalResult" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
+            <div x-show="showModalResult" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
             <!-- Panel -->
-            <div x-show="modalResult" x-transition.duration.500ms
+            <div x-show="showModalResult" x-transition.duration.500ms
                 class="relative min-h-screen flex items-center justify-center p-4">
-                <div @click.stop x-trap.noscroll.inert="modalResult"
+                <div @click.stop x-trap.noscroll.inert="showModalResult"
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-12 overflow-y-auto">
                     <div class="flex flex-col gap-10 justify-center items-center bg-white rounded-3xl">
                         <p id="resultTitle" class="block text-center text-xl lg:text-4xl text-black "
                             x-text="resultTitle"></p>
                         <div id="resultStars" class="flex flex-row gap-5 justify-start items-start">
                             <template x-for="i in 5">
-                                <svg :class="i*20<=(triesRemaining/triesCount)*100 ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
+                                <svg :class="i*.2<=(triesRemaining/triesCount) ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
                                     class="w-8 h-8 lg:w-12 lg:h-12" viewBox="0 0 84 81" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -118,7 +119,7 @@
                             </template>
                         </div>
                         <div id="resultButtons">
-                            <button @click.stop="nextWordClicked"
+                            <button @click.stop="game.nextGame"
                                 class="flex flex-row gap-2 justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-700 rounded-2xl">
                                 <p class="block text-center text-xl lg:text-4xl text-white">واصل</p>
                             </button>
@@ -129,16 +130,16 @@
         </div>
 
         <!-- Modal -->
-        <div x-show="openModalSettings" @keydown.escape.prevent.stop="openModalSettings=false" role="dialog"
+        <div x-show="showModalSettings" @keydown.escape.prevent.stop="showModalSettings=false" role="dialog"
             aria-modal="true" x-id="['modal-title']" :aria-labelledby="$id('modal-title')"
             class="fixed inset-0 overflow-y-auto z-10">
             <!-- Overlay -->
-            <div @click.stop="openModalSettings=false" x-show="openModalSettings" x-transition.opacity
+            <div @click.stop="showModalSettings=false" x-show="showModalSettings" x-transition.opacity
                 class="fixed inset-0 bg-black bg-opacity-50"></div>
             <!-- Panel -->
-            <div x-show="openModalSettings" x-transition
+            <div x-show="showModalSettings" x-transition
                 class="relative min-h-screen flex items-center justify-center p-4">
-                <div @click.stop x-trap.noscroll.inert="openModalSettings"
+                <div @click.stop x-trap.noscroll.inert="showModalSettings"
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-4 overflow-y-auto">
                     <div class="px-4 py-3 text-right sm:px-6">
                         <label for="lettersCount" class="block text-md font-medium text-gray-700">
@@ -158,11 +159,11 @@
                             class="w-fit mt-1 focus:ring-teal-500 focus:border-teal-500 block shadow-sm text-md border-gray-300 rounded-md">
                     </div>
                     <div class="px-4 py-3 text-right sm:px-6">
-                        <button @click.stop="openModalSettings=false"
+                        <button @click.stop="showModalSettings=false"
                             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                             اغلاق
                         </button>
-                        <button @click.stop="nextWordClicked(); openModalSettings=false"
+                        <button @click.stop="game.nextGame(); showModalSettings=false"
                             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                             الكلمة القادمة
                         </button>
