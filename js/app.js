@@ -13,11 +13,11 @@ document.addEventListener('alpine:init', () => {
         return {
             async init() {
                 window.app = this;
-                if (window.app.game.generatedLetterz === '') {
+                if (window.app.game.current.type!=='text_write' && !window.app.game.choices.length) {
                     window.app.game.nextGame()
                 }
                 Alpine.nextTick(() => window.app.animateGame())
-                document.querySelector('#photo img').onload = () => window.app.game.imageIsLoading = false;
+                document.querySelector('#photo>img').onload = () => window.app.game.imageIsLoading = false;
 
                 if(window.app.triesRemaining<=0){
                     window.app.showModalResult = true;
@@ -29,17 +29,36 @@ document.addEventListener('alpine:init', () => {
             lock: true,
             currentGameIndex: this.$persist(0),
             game: {
-                showAnswer: false,
+                showAnswer: this.$persist(true),
                 state: null,
                 userInput: this.$persist(''),
                 image: this.$persist(''),
                 imageIsLoading: false,
-                generatedLetterz: this.$persist(''),
-                get correctWord() { return window.app.games?.[window.app.currentGameIndex]?.ar ?? '' },
+                choices: this.$persist([]),
+                get current() { return window.app.games?.[window.app.currentGameIndex]; },
+                get canSubmit() {
+                    if (window.app.game.current.type === 'single_choice') {
+                        return window.app.game.state!=='wrong';
+                    }
+                    else if(window.app.game.current.type==='text_write' && window.app.game.userInput.length>0) {
+                        return true;
+                    }
+                    else if(window.app.game.userInput.length>=window.app.game.current.answer.length && window.app.game.state!=='wrong') {
+                        return true;
+                    }
+                    return false;
+                },
                 insertLetter(letter) {
                     if(window.app.lock)return;
-                    if (letter && window.app.game.userInput.length<window.app.game.correctWord.length) {
-                        let tmp = window.app.game.userInput+= letter
+                    if (window.app.game.current.type === 'single_choice'){
+                        window.app.game.state = null;
+                        window.app.game.userInput = letter;
+                    }
+                    else if(letter && window.app.game.current.type==='text_write') {
+                        window.app.game.userInput+= letter
+                    }
+                    else if(letter && window.app.game.userInput.length<window.app.game.current.answer.length) {
+                        let tmp = window.app.game.userInput+letter
                         window.app.game.userInput="";
                         Alpine.nextTick(() => window.app.game.userInput = tmp)
                     }
@@ -51,24 +70,21 @@ document.addEventListener('alpine:init', () => {
                 },
                 submit() {
                     if(window.app.lock)return;
-                    if(window.app.game.showAnswer) {
-                        window.app.showModalResult = true;
-                        Alpine.nextTick(() => window.app.animateResult())
-                        return;
-                    }
-                    if(window.app.game.userInput === window.app.game.correctWord)
+                    if(window.app.removeTashkeel(window.app.game.userInput).replace(/\s+/g, ' ').trim() === window.app.removeTashkeel(window.app.game.current.answer).replace(/\s+/g, ' ').trim())
                     {
                         window.app.game.state = "correct";
                         window.app.showModalResult = true;
                         Alpine.nextTick(() => window.app.animateResult())
                     }
-                    else if(window.app.game.userInput.length >= window.app.game.correctWord.length) {
-                        window.app.animateShake('#slots').then(()=>{
-                            if(window.app.game.state != "wrong"){
+                    else if(window.app.game.current.type === 'single_choice' || window.app.game.current.type === 'text_write' || window.app.game.userInput.length >= window.app.game.current.answer.length) {
+                        window.app.animateShake(window.app.game.current.type === 'single_choice' ? '#letters>.selected' : (window.app.game.current.type === 'text_write' ? '#textarea' : '#slots')).then(()=>{
+                            if(window.app.game.current.type === 'text_write' || window.app.game.state != "wrong"){
                                 window.app.triesRemaining--;
                                 window.app.game.state = "wrong";
                                 if(window.app.triesRemaining<=0){
                                     window.app.game.showAnswer = true;
+                                    window.app.showModalResult = true;
+                                    Alpine.nextTick(() => window.app.animateResult())
                                 }
                             }
                         })
@@ -82,8 +98,8 @@ document.addEventListener('alpine:init', () => {
                     if(window.app.lock)return;
                     window.app.showModalResult = false;
                     window.app.lock = true;
-                    window.app.game.showAnswer = false;
                     window.app.animateGame(false).then(() => {
+                        window.app.game.showAnswer = false;
                         window.app.game.state = null;
                         window.app.game.userInput = '';
                         window.app.triesRemaining = window.app.triesCount;
@@ -92,9 +108,14 @@ document.addEventListener('alpine:init', () => {
                             window.app.currentGameIndex = 0;
                         }
                         Alpine.nextTick(async () => {
-                            window.app.game.generatedLetterz = window.app.generateLetters(window.app.game.correctWord, window.app.lettersCount)
+                            window.app.game.choices = window.app.game.current.type==='text_write' ? [] : window.app.game.current.choices ? window.app.shuffle(window.app.game.current.choices) : window.app.generateLetters(window.app.game.current.answer, window.app.game.current.numberOfLetters ?? window.app.lettersCount)
                             window.app.game.imageIsLoading = true;
-                            window.app.game.image = await window.app.fetchImage(window.app.games?.[window.app.currentGameIndex]?.en)
+                            let tmp_img = window.app.game.image;
+
+                            if(window.app.game.current.imageTag) {
+                                window.app.game.image = await window.app.fetchImage(window.app.game.current.imageTag)
+                            }
+                            if(tmp_img === window.app.game.image) window.app.game.imageIsLoading = false;
                             Alpine.nextTick(() => window.app.animateGame().then(() =>  window.app.lock = false))
                         })
                     })
@@ -115,7 +136,14 @@ document.addEventListener('alpine:init', () => {
                 window.app.speaking = true;
                 T2S.speak(msg);
             },
-            games: [{ ar: 'ذئب', en: 'wolf' }, { ar: 'برتقال', en: 'orange' }, { ar: 'فأرة', en: 'mice' }],
+            games: [
+                { type: 'text_write', q: 'استمع واكتب', answer: 'تَعَلَّقَ يَتَعَلَّق', imageTag: 'hanging', get audio() { return this.answer } },
+                { type: 'text_write', q: 'استمع واكتب', answer: 'عَالِم عُلَمَاء', imageTag: 'scientist', get audio() { return this.answer } },
+                { type: 'single_choice', q: 'اختر الإجابة الصحيحة', q2: 'ما هي عاصمة مصر؟', answer: 'القاهرة', choices: ['القاهرة', 'الجزائر', 'برشلونة', 'بغداد'], imageTag: 'egypt', get audio() { return this.q2 } },
+                { type: 'single_choice', q: 'اختر الإجابة الصحيحة', q2: 'ما هو مجموع 1+1 ؟', answer: '2', choices: ['2', '3', '4', '5'], imageTag: '1+1', get audio() { return this.q2 } },
+                { type: 'word_building', q: 'استمع واكتب', answer: 'ذئب', numberOfLetters: 8, imageTag: 'wolf', get audio() { return this.answer }  },
+                { type: 'word_building', q: 'استمع واكتب', answer: 'برتقال', imageTag: 'orange fruit', get audio() { return this.answer } },
+            ],
             //Options
             imageShow: this.$persist(true),
             triesRemaining: this.$persist(0),
@@ -157,20 +185,33 @@ document.addEventListener('alpine:init', () => {
                 return image
             },
             //Strings
-            shuffle: str => [...str].sort(() => Math.random() - .5).join(''),
+            shuffle(array) {
+                let currentIndex = array.length,  randomIndex;
+                while (currentIndex != 0) {
+                  randomIndex = Math.floor(Math.random() * currentIndex);
+                  currentIndex--;
+                  [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
             isLetter(str) {
-                return str.length === 1 && str.match(/[\u0600-\u06FF]/)?.[0];
+                if(window.app.game.current.type==='text_write' && (str.length === 1 && str.match(/[\u0600-\u06FF]/)?.[0] || str === ' ') || (window.app.game.choices.length && window.app.game.choices.includes(str))) return str;
+                return false;
             },
             generateLetters(includedLetters, totalLetters) {
-                let tmp = includedLetters;
+                let tmp = includedLetters.split('');
                 for (let i = 0, l = totalLetters - tmp.length; i < l; i++) {
                     let rdmL = '';
                     while (rdmL === "" || tmp.includes(rdmL)) {
                         rdmL = window.app.letters[Math.floor(Math.random() * window.app.letters.length)]
                     }
-                    tmp += rdmL;
+                    tmp.push(rdmL);
                 }
                 return window.app.shuffle(tmp)
+            },
+            removeTashkeel(text) {
+                return text.replace(/([^\u0621-\u063A\u0641-\u064A\u0660-\u0669a-zA-Z 0-9])/g, '');
             },
             //Animations
             animateResult() {
@@ -186,7 +227,18 @@ document.addEventListener('alpine:init', () => {
                         delay: function (el, i, l) {
                             return i * 100;
                         }
-                    }, "-=600").add({
+                    }, "-=600")
+
+                    if(window.app.game.showAnswer) {
+                        tl.add({
+                            targets: '#answer',
+                            opacity: [0, '100%'],
+                            delay: function (el, i, l) {
+                                return i * 100;
+                            },
+                        })
+                    }
+                    tl.add({
                         targets: '#resultStars>.wrong',
                         opacity: [0, '100%'],
                         delay: function (el, i, l) {
@@ -233,15 +285,34 @@ document.addEventListener('alpine:init', () => {
             },
             animateGame(animateIn=true) {
                 return new Promise((resolve, reject) => {
+                    if(document.getElementById('slots'))
                     document.getElementById('slots').style.transform = null;
                     var tl = anime.timeline({
                         direction: animateIn ? 'normal' : 'reverse',
                     });
-                    tl.add({
-                        targets: '#photo',
+                    tl
+                    .add({
+                        targets: '#title',
                         scale: [0, '100%'],
                         easing: 'easeOutElastic(1, .4)'
                     })
+                    .add({
+                        targets: '#triesHearts>svg',
+                        scale: [0, '100%'],
+                        delay: function (el, i, l) {
+                            return i * 100;
+                        }
+                    }, '-=900')
+                    .add({
+                        targets: '#photo',
+                        scale: [0, '100%'],
+                        easing: 'easeOutElastic(1, .4)'
+                    }, '-=600')
+                    .add({
+                        targets: '#question',
+                        scale: [0, '100%'],
+                        easing: 'easeOutElastic(1, .4)'
+                    }, '-=600')
                     .add({
                         targets: '#letters>button',
                         scale: [0, '100%'],
@@ -249,14 +320,26 @@ document.addEventListener('alpine:init', () => {
                             return i * 100;
                         }
                     }, '-=600')
-                    .add({
-                        targets: animateIn ? '#slots>span' : '#slots',
-                        scale: [0, '100%'],
-                        delay: function (el, i, l) {
-                            return i * 50;
-                        },
-                    }, '-=1200')
-                    .add({
+                    if(window.app.game.current.type === 'word_building'){
+                        tl.add({
+                            targets: animateIn ? '#slots>span' : '#slots',
+                            scale: [0, '100%'],
+                            delay: function (el, i, l) {
+                                return i * 50;
+                            },
+                        }, '-=1200')
+                    }
+                    else if(window.app.game.current.type === 'text_write') {
+                        tl.add({
+                            targets: '#textarea',
+                            scale: [0, '100%'],
+                            delay: function (el, i, l) {
+                                return i * 50;
+                            },
+                        }, '-=1200')
+                    }
+
+                    tl.add({
                         targets: '#buttons>button',
                         scale: [0, '100%'],
                         delay: function (el, i, l) {
