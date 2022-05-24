@@ -29,6 +29,7 @@ document.addEventListener('alpine:init', () => {
             lock: true,
             currentGameIndex: this.$persist(0),
             game: {
+                showAnswer: false,
                 state: null,
                 userInput: this.$persist(''),
                 image: this.$persist(''),
@@ -50,6 +51,11 @@ document.addEventListener('alpine:init', () => {
                 },
                 submit() {
                     if(window.app.lock)return;
+                    if(window.app.game.showAnswer) {
+                        window.app.showModalResult = true;
+                        Alpine.nextTick(() => window.app.animateResult())
+                        return;
+                    }
                     if(window.app.game.userInput === window.app.game.correctWord)
                     {
                         window.app.game.state = "correct";
@@ -62,8 +68,7 @@ document.addEventListener('alpine:init', () => {
                                 window.app.triesRemaining--;
                                 window.app.game.state = "wrong";
                                 if(window.app.triesRemaining<=0){
-                                    window.app.showModalResult = true;
-                                    Alpine.nextTick(() => window.app.animateResult())
+                                    window.app.game.showAnswer = true;
                                 }
                             }
                         })
@@ -165,7 +170,6 @@ document.addEventListener('alpine:init', () => {
                     }
                     tmp += rdmL;
                 }
-                console.log("tmp", tmp)
                 return window.app.shuffle(tmp)
             },
             //Animations
