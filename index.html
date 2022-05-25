@@ -9,6 +9,7 @@
     <title>أملِ لي</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/app.css">
+    <script src="https://unpkg.com/wavesurfer.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -16,8 +17,9 @@
     <script type="text/javascript" src="js/app.js"></script>
 </head>
 
-<body class="bg-teal-400 font-tajawal h-screen overflow-hidden" dir="rtl">
-    <div x-data="game" class="w-full h-full flex flex-col items-center p-4 gap-8 lg:gap-60" x-cloak>
+<body class="bg-teal-400 font-tajawal h-screen" dir="rtl">
+    <div x-data="game" class="w-full h-full flex flex-col items-center p-4 gap-8" x-cloak
+        @keyup.window="keypressed($event)">
         <div class="w-full flex justify-between">
             <div class="flex gap-2 lg:gap-4 ml-4 lg:ml-8">
                 <svg class="w-4 lg:w-8" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,93 +39,106 @@
                 </button>
             </div>
         </div>
-        <div class="w-full flex flex-1 gap-14 justify-center flex-col lg:w-[800px]">
-            <div class="w-full flex justify-between">
-                <div id="title">
-                    <p class="text-xl lg:text-3xl font-bold text-teal-900" x-text="game.current.q"></p>
-                </div>
-                <div id="triesHearts" class="transition flex flex-row-reverse gap-2 justify-center items-start">
-                    <template x-for="i in parseInt(triesCount)">
-                        <svg class="w-8 h-8 lg:w-12 lg:h-12" viewBox="-4 -4 52 46" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path class="transition"
-                                :class="i*(1/triesCount)<=(triesRemaining/triesCount) ? 'correct fill-red-500 stroke-red-600 stroke-[4px]' : 'wrong fill-white opacity-50'"
-                                d="M11.4299 0C5.21768 0 0.179932 4.97041 0.179932 11.1027C0.179932 16.0529 2.14868 27.8016 21.5279 39.6781C21.8751 39.8886 22.2736 40 22.6799 40C23.0863 40 23.4848 39.8886 23.8319 39.6781C43.2112 27.8016 45.1799 16.0529 45.1799 11.1027C45.1799 4.97041 40.1422 0 33.9299 0C27.7177 0 22.6799 6.7289 22.6799 6.7289C22.6799 6.7289 17.6422 0 11.4299 0Z" />
-                        </svg>
-                    </template>
-                </div>
-            </div>
-
-            <div class="w-full flex flex-col-reverse lg:flex-row gap-4 flex-auto lg:flex-1 lg:gap-6">
-                <div class="flex-1 flex flex-col gap-6">
-                    <div id="question" class="w-full">
-                        <button @click.stop="readWord(game.current.audio)"
-                            class="flex w-full px-6 py-3 bg-teal-200 rounded-full border-dashed border-4 border-teal-600 text-3xl">
-                            <span x-text="game.current.q2"></span>
-                            <svg :class="{'fill-teal-400':speaking}" class="fill-teal-600 m-auto w-5 h-5 lg:w-7 lg:h-7"
-                                viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M26.2434 1.87484C26.2434 1.50605 26.1346 1.14547 25.9307 0.838193C25.7269 0.530921 25.4369 0.290607 25.0972 0.147319C24.7575 0.00403053 24.3831 -0.035869 24.0208 0.0326113C23.6585 0.101092 23.3245 0.274911 23.0605 0.532323L12.087 11.2199H5.62359C4.13212 11.2199 2.70174 11.8126 1.64711 12.8675C0.592483 13.9224 0 15.3531 0 16.845V28.0576C0 29.5495 0.592483 30.9802 1.64711 32.0351C2.70174 33.09 4.13212 33.6827 5.62359 33.6827H12.0832L23.0567 44.464C23.3203 44.7225 23.6543 44.8973 24.0169 44.9667C24.3795 45.036 24.7544 44.9967 25.0947 44.8537C25.4351 44.7107 25.7256 44.4704 25.93 44.163C26.1343 43.8555 26.2433 43.4945 26.2434 43.1253V1.87484ZM30.4086 11.9587C30.5619 11.7658 30.7517 11.6049 30.9671 11.4854C31.1826 11.3659 31.4194 11.2901 31.6642 11.2622C31.909 11.2344 32.1569 11.255 32.3937 11.3231C32.6304 11.3911 32.8515 11.5051 33.0442 11.6587L33.0517 11.6624L33.0592 11.6699L33.0779 11.6849L33.1342 11.7337L33.3066 11.8837C33.4416 12.0112 33.6253 12.1837 33.839 12.4162C34.2626 12.8774 34.8137 13.5487 35.3574 14.4412C36.4483 16.2412 37.5056 18.915 37.5056 22.4963C37.5056 26.0738 36.4483 28.7514 35.3574 30.5514C34.92 31.2765 34.4113 31.9561 33.839 32.5801C33.6006 32.8392 33.3477 33.0846 33.0817 33.3152L33.0517 33.3414H33.0479C33.0479 33.3414 31.3721 34.2527 30.4124 33.0489C30.1037 32.6627 29.9601 32.1701 30.0128 31.6785C30.0654 31.1869 30.3101 30.7359 30.6935 30.4239L30.701 30.4164L30.6973 30.4201L30.7048 30.4164H30.701L30.7685 30.3564C30.836 30.2926 30.9485 30.1876 31.0872 30.0376C31.4887 29.5966 31.8453 29.1167 32.1519 28.6051C32.9392 27.3113 33.7565 25.2976 33.7565 22.4925C33.7565 19.6913 32.9392 17.6812 32.1519 16.3912C31.7664 15.7548 31.303 15.169 30.7723 14.6475C30.5673 14.4983 30.3946 14.309 30.2648 14.0912C30.1351 13.8734 30.0508 13.6315 30.0171 13.3801C29.9835 13.1288 30.0012 12.8732 30.0691 12.6289C30.137 12.3846 30.2538 12.1566 30.4124 11.9587H30.4086ZM36.7895 4.15861C36.5976 3.99975 36.3759 3.88074 36.1375 3.80853C35.8991 3.73633 35.6487 3.71239 35.4009 3.7381C35.1531 3.76381 34.913 3.83866 34.6945 3.95828C34.4759 4.0779 34.2834 4.23989 34.1282 4.43477C33.973 4.62966 33.8582 4.85353 33.7904 5.09332C33.7227 5.3331 33.7034 5.58398 33.7338 5.8313C33.7641 6.07862 33.8434 6.31741 33.967 6.53373C34.0906 6.75004 34.2561 6.93954 34.4538 7.09114L34.4951 7.12864L34.69 7.29739C34.8662 7.45489 35.1249 7.69864 35.4436 8.02865C36.0809 8.6924 36.9432 9.68991 37.8055 11.0062C39.5301 13.635 41.2546 17.505 41.2546 22.515C41.2643 26.6029 40.0642 30.6021 37.8055 34.0089C36.9432 35.3214 36.0809 36.3114 35.4436 36.9714C35.1421 37.2853 34.8269 37.5856 34.4988 37.8714L34.4576 37.9089H34.4538C34.0755 38.2221 33.8351 38.6714 33.7845 39.16C33.7338 39.6486 33.8768 40.1376 34.1828 40.5218C34.4889 40.906 34.9334 41.1547 35.4209 41.2145C35.9083 41.2743 36.3998 41.1404 36.7895 40.8415L36.9132 40.7402L37.1944 40.4965C37.4306 40.2827 37.7568 39.979 38.1429 39.5777C39.1821 38.4971 40.1184 37.322 40.9397 36.0677C43.5984 32.0489 45.0109 27.334 44.9999 22.515C45.0094 17.6916 43.5971 12.9724 40.9397 8.94741C40.1186 7.69162 39.1837 6.51413 38.1467 5.42987C37.7548 5.02254 37.3445 4.63337 36.917 4.26361L36.8307 4.19236L36.8045 4.16986L36.797 4.16236L36.7895 4.15861V4.15861ZM30.7048 14.5875L30.6973 14.5837L30.7048 14.5875Z" />
-                            </svg>
-                        </button>
+        <template x-if="game.current">
+            <div
+                class="w-full flex flex-1 gap-14 lg:gap-20 justify-center flex-col lg:w-[1000px] lg:-mt-16 transition-transform">
+                <div class="flex flex-1 flex-col gap-6 lg:gap-12 lg:rounded-3xl lg:py-24 lg:px-24 lg:shadow-3xl lg:flex-initial">
+                    <div class="w-full flex justify-between">
+                        <div id="title">
+                            <p class="text-xl lg:text-3xl font-bold text-teal-900" x-text="game.current.q"></p>
+                        </div>
+                        <template x-if="game.current.attempts > 1">
+                            <div id="triesHearts"
+                                class="transition flex flex-row-reverse gap-2 justify-center items-start">
+                                <template x-for="i in parseInt(game.current.attempts)">
+                                    <svg class="w-8 h-8 lg:w-12 lg:h-12" viewBox="-4 -4 52 46" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path class="transition"
+                                            :class="i*(1/parseInt(game.current.attempts))<=(triesRemaining/parseInt(game.current.attempts)) ? 'correct fill-red-400 stroke-red-500 stroke-[4px]' : 'wrong fill-white opacity-50'"
+                                            d="M11.4299 0C5.21768 0 0.179932 4.97041 0.179932 11.1027C0.179932 16.0529 2.14868 27.8016 21.5279 39.6781C21.8751 39.8886 22.2736 40 22.6799 40C23.0863 40 23.4848 39.8886 23.8319 39.6781C43.2112 27.8016 45.1799 16.0529 45.1799 11.1027C45.1799 4.97041 40.1422 0 33.9299 0C27.7177 0 22.6799 6.7289 22.6799 6.7289C22.6799 6.7289 17.6422 0 11.4299 0Z" />
+                                    </svg>
+                                </template>
+                            </div>
+                        </template>
                     </div>
-                    <div class="flex flex-col gap-6 items-center">
-                        <template x-if="game.current.type==='word_building'">
-                            <div id="slots">
-                                <template x-for="i in game.current.answer.length">
-                                    <span x-text="game.userInput?.[i-1] ?? '_'" class="text-4xl lg:text-5xl text-white"
-                                        :class="{'mr-4 decoration-white decoration-8 inline-block empty' : game.userInput?.[i-1] == null, 'text-red-500': game.state==='wrong', 'text-teal-700': game.state==='correct'}">
-                                    </span>
-                                </template>
-                            </div>
-                        </template>
-                        <template x-if="game.current.type==='text_write'">
-                            <textarea id="textarea" x-model="game.userInput" class="w-full rounded-3xl p-4 text-4xl"
-                            :class="game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-white text-teal-900'"
-                            ></textarea>
-                        </template>
-                        <template x-if="game.choices.length">
-                            <div id="letters" class="flex flex-wrap gap-4 justify-center"
-                                @keyup.window="game.insertLetter(isLetter($event.key))">
-                                <template x-for="letter in game.choices">
-                                    <button @click.stop="game.insertLetter($el.innerText)"
-                                        :class="(letter.length===1 ? 'w-10 lg:w-12 ' : ' ') + ((game.current.type === 'word_building' || letter !== game.userInput) ? 'bg-white text-teal-900' : 'selected '+(game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-teal-200 text-teal-900'))"
-                                        class="flex flex-col gap-2 justify-center items-center h-10 lg:h-12 px-4 py-4 rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.3)]">
-                                        <p x-text="letter" class="block text-center text-xl lg:text-3xl"></p>
-                                    </button>
-                                </template>
-                            </div>
-                        </template>
-                        <div id="buttons" class="flex gap-4 justify-start items-start">
-                            <template x-if="game.current.type==='word_building'">
-                                <button @click.stop="game.removeLetter" @keyup.backspace.window="game.removeLetter"
-                                    class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl">
-                                    <p class="block text-center text-xl lg:text-3xl text-white ">حذف</p>
+
+                    <div class="w-full flex flex-col-reverse lg:flex-row gap-4 lg:gap-12 flex-1 lg:flex-initial">
+                        <div class="flex-1 flex flex-col gap-6">
+                            <div id="question" class="w-full" x-show="game.current.audio || game.current.q2">
+                                <button @click.stop="readWord(game.current.audio)"
+                                    class="flex px-4 gap-2 flex-row-reverse w-full h-16 bg-teal-200 rounded-full border-dashed border-4 border-teal-600 text-3xl items-center">
+                                    <svg x-show="game.current.audio" :class="{'fill-teal-400':speaking}"
+                                    class="fill-teal-600 m-auto w-5 h-5 lg:w-7 lg:h-7" viewBox="0 0 45 45"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                        d="M26.2434 1.87484C26.2434 1.50605 26.1346 1.14547 25.9307 0.838193C25.7269 0.530921 25.4369 0.290607 25.0972 0.147319C24.7575 0.00403053 24.3831 -0.035869 24.0208 0.0326113C23.6585 0.101092 23.3245 0.274911 23.0605 0.532323L12.087 11.2199H5.62359C4.13212 11.2199 2.70174 11.8126 1.64711 12.8675C0.592483 13.9224 0 15.3531 0 16.845V28.0576C0 29.5495 0.592483 30.9802 1.64711 32.0351C2.70174 33.09 4.13212 33.6827 5.62359 33.6827H12.0832L23.0567 44.464C23.3203 44.7225 23.6543 44.8973 24.0169 44.9667C24.3795 45.036 24.7544 44.9967 25.0947 44.8537C25.4351 44.7107 25.7256 44.4704 25.93 44.163C26.1343 43.8555 26.2433 43.4945 26.2434 43.1253V1.87484ZM30.4086 11.9587C30.5619 11.7658 30.7517 11.6049 30.9671 11.4854C31.1826 11.3659 31.4194 11.2901 31.6642 11.2622C31.909 11.2344 32.1569 11.255 32.3937 11.3231C32.6304 11.3911 32.8515 11.5051 33.0442 11.6587L33.0517 11.6624L33.0592 11.6699L33.0779 11.6849L33.1342 11.7337L33.3066 11.8837C33.4416 12.0112 33.6253 12.1837 33.839 12.4162C34.2626 12.8774 34.8137 13.5487 35.3574 14.4412C36.4483 16.2412 37.5056 18.915 37.5056 22.4963C37.5056 26.0738 36.4483 28.7514 35.3574 30.5514C34.92 31.2765 34.4113 31.9561 33.839 32.5801C33.6006 32.8392 33.3477 33.0846 33.0817 33.3152L33.0517 33.3414H33.0479C33.0479 33.3414 31.3721 34.2527 30.4124 33.0489C30.1037 32.6627 29.9601 32.1701 30.0128 31.6785C30.0654 31.1869 30.3101 30.7359 30.6935 30.4239L30.701 30.4164L30.6973 30.4201L30.7048 30.4164H30.701L30.7685 30.3564C30.836 30.2926 30.9485 30.1876 31.0872 30.0376C31.4887 29.5966 31.8453 29.1167 32.1519 28.6051C32.9392 27.3113 33.7565 25.2976 33.7565 22.4925C33.7565 19.6913 32.9392 17.6812 32.1519 16.3912C31.7664 15.7548 31.303 15.169 30.7723 14.6475C30.5673 14.4983 30.3946 14.309 30.2648 14.0912C30.1351 13.8734 30.0508 13.6315 30.0171 13.3801C29.9835 13.1288 30.0012 12.8732 30.0691 12.6289C30.137 12.3846 30.2538 12.1566 30.4124 11.9587H30.4086ZM36.7895 4.15861C36.5976 3.99975 36.3759 3.88074 36.1375 3.80853C35.8991 3.73633 35.6487 3.71239 35.4009 3.7381C35.1531 3.76381 34.913 3.83866 34.6945 3.95828C34.4759 4.0779 34.2834 4.23989 34.1282 4.43477C33.973 4.62966 33.8582 4.85353 33.7904 5.09332C33.7227 5.3331 33.7034 5.58398 33.7338 5.8313C33.7641 6.07862 33.8434 6.31741 33.967 6.53373C34.0906 6.75004 34.2561 6.93954 34.4538 7.09114L34.4951 7.12864L34.69 7.29739C34.8662 7.45489 35.1249 7.69864 35.4436 8.02865C36.0809 8.6924 36.9432 9.68991 37.8055 11.0062C39.5301 13.635 41.2546 17.505 41.2546 22.515C41.2643 26.6029 40.0642 30.6021 37.8055 34.0089C36.9432 35.3214 36.0809 36.3114 35.4436 36.9714C35.1421 37.2853 34.8269 37.5856 34.4988 37.8714L34.4576 37.9089H34.4538C34.0755 38.2221 33.8351 38.6714 33.7845 39.16C33.7338 39.6486 33.8768 40.1376 34.1828 40.5218C34.4889 40.906 34.9334 41.1547 35.4209 41.2145C35.9083 41.2743 36.3998 41.1404 36.7895 40.8415L36.9132 40.7402L37.1944 40.4965C37.4306 40.2827 37.7568 39.979 38.1429 39.5777C39.1821 38.4971 40.1184 37.322 40.9397 36.0677C43.5984 32.0489 45.0109 27.334 44.9999 22.515C45.0094 17.6916 43.5971 12.9724 40.9397 8.94741C40.1186 7.69162 39.1837 6.51413 38.1467 5.42987C37.7548 5.02254 37.3445 4.63337 36.917 4.26361L36.8307 4.19236L36.8045 4.16986L36.797 4.16236L36.7895 4.15861V4.15861ZM30.7048 14.5875L30.6973 14.5837L30.7048 14.5875Z" />
+                                    </svg>
+                                    <span x-text="game.current.q2" class="flex-1"></span>
+                                    <div x-show="game.current.audio && !game.current.q2" id="audio" class="w-full h-16"></div>
                                 </button>
-                            </template>
-                            <template x-if="game.current.type==='text_write'">
-                                <button @click.stop="game.userInput = ''"
-                                    class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl">
-                                    <p class="block text-center text-xl lg:text-3xl text-white ">مسح</p>
-                                </button>
-                            </template>
-                            <button @click.stop="game.submit" @keyup.enter.window="game.submit"
-                                :class="game.canSubmit ? 'bg-teal-700 text-white' : 'bg-gray-500 text-gray-200'"
-                                class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl">
-                                <p class="block text-center text-xl lg:text-3xl">إدخال</p>
-                            </button>
+                            </div>
+                            <div class="flex flex-col gap-6 items-center">
+                                <template x-if="game.current.type==='word_building'">
+                                    <div id="slots">
+                                        <template x-for="i in game.current.answer.length">
+                                            <span x-text="game.userInput?.[i-1] ?? '_'"
+                                                class="text-4xl lg:text-5xl text-white"
+                                                :class="{'mr-4 decoration-white decoration-8 inline-block empty' : game.userInput?.[i-1] == null, 'text-red-500': game.state==='wrong', 'text-teal-700': game.state==='correct'}">
+                                            </span>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template x-if="game.current.type==='text_write'">
+                                    <textarea id="textarea" x-model="game.userInput"
+                                        class="w-full rounded-3xl p-4 text-4xl"
+                                        :class="game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-white text-teal-900'"></textarea>
+                                </template>
+                                <template x-if="game.choices.length">
+                                    <div id="letters" class="flex flex-wrap gap-4 justify-center"
+                                        @keyup.window="game.insertLetter(isLetter($event.key))">
+                                        <template x-for="letter in game.choices">
+                                            <button @click.stop="game.insertLetter($el.innerText)"
+                                                :class="(letter.length===1 ? 'w-10 lg:w-12 ' : ' ') + ((game.current.type === 'word_building' || letter !== game.userInput) ? 'bg-white text-teal-900' : 'selected '+(game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-teal-200 text-teal-900'))"
+                                                class="flex flex-col gap-2 justify-center items-center h-10 lg:h-12 px-4 py-4 rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.3)]">
+                                                <p x-text="letter" class="block text-center text-xl lg:text-3xl"></p>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                                <div id="buttons" class="flex gap-4 justify-start items-start">
+                                    <template x-if="game.current.type==='word_building'">
+                                        <button @click.stop="game.removeLetter"
+                                            @keyup.backspace.window="game.removeLetter"
+                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl">
+                                            <p class="block text-center text-xl lg:text-3xl text-white ">حذف</p>
+                                        </button>
+                                    </template>
+                                    <template x-if="game.current.type==='text_write'">
+                                        <button @click.stop="game.userInput = ''"
+                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl">
+                                            <p class="block text-center text-xl lg:text-3xl text-white ">مسح</p>
+                                        </button>
+                                    </template>
+                                    <template x-if="game.current.type==='text_write' || game.current.type==='word_building'">
+                                        <button @click.stop="game.submit" @keyup.enter.window="game.submit"
+                                            :class="game.canSubmit ? 'bg-teal-700 text-white' : 'bg-gray-500 text-gray-200'"
+                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl">
+                                            <p class="block text-center text-xl lg:text-3xl">إدخال</p>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 w-full h-full" x-show="game.current.image && imageShow">
+                            <div id="photo" x-show="!game.imageIsLoading" class="w-full h-full">
+                                <img class="bg-teal-500 border-8 border-white rounded-4 object-cover max-w-full max-h-full absolute top-0 left-0 right-0 m-auto"
+                                    x-bind:src="game.current.image" />
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex-1 w-full h-full">
-                    <div id="photo" x-show="imageShow && !game.imageIsLoading" class="w-full h-full">
-                        <img class="bg-teal-500 border-8 border-white rounded-4 object-cover max-w-full max-h-full absolute top-0 left-0 right-0 m-auto"
-                            x-bind:src="game.image" />
-                    </div>
-                </div>
             </div>
-        </div>
-
+        </template>
         <!-- Modal -->
         <div x-show="showModalResult" @keydown.escape.prevent.stop="game.nextGame" role="dialog" aria-modal="true"
             x-id="['modal-title']" :aria-labelledby="$id('modal-title')" class="fixed inset-0 overflow-y-auto z-10">
@@ -139,7 +154,7 @@
                             x-text="resultTitle"></p>
                         <div id="resultStars" class="flex flex-row gap-5 justify-start items-start">
                             <template x-for="i in 5">
-                                <svg :class="i*.2<=(triesRemaining/triesCount) ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
+                                <svg :class="i*.2<=(triesRemaining/game.current?.attempts) ?? 1 ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
                                     class="w-8 h-8 lg:w-12 lg:h-12" viewBox="0 0 84 81" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -147,14 +162,16 @@
                                 </svg>
                             </template>
                         </div>
-                        <div x-show="game.showAnswer" id="answer" class="flex flex-col w-full gap-6 justify-start items-center">
+                        <div x-show="game.showAnswer" id="answer"
+                            class="flex flex-col w-full gap-6 justify-start items-center">
                             <div class="text-2xl lg:text-2xl text-teal-700 underline text-right w-full">إجابتك:</div>
                             <div class="bg-gray-200 rounded-xl w-full text-center p-4">
                                 <div x-text="game.userInput" class="text-4xl lg:text-5xl text-black"></div>
                             </div>
-                            <div class="text-2xl lg:text-2xl text-teal-700 underline text-right w-full">الإجابة الصحيحة</div>
+                            <div class="text-2xl lg:text-2xl text-teal-700 underline text-right w-full">الإجابة الصحيحة:
+                            </div>
                             <div class="bg-green-200 rounded-xl w-full text-center p-4">
-                                <div x-text="game.current.answer" class="text-4xl lg:text-5xl text-teal-700"></div>
+                                <div x-text="game.current?.answer" class="text-4xl lg:text-5xl text-teal-700"></div>
                             </div>
                         </div>
                         <div id="resultButtons">
@@ -180,7 +197,7 @@
                 class="relative min-h-screen flex items-center justify-center p-4">
                 <div @click.stop x-trap.noscroll.inert="showModalSettings"
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-4 overflow-y-auto">
-                    <div class="px-4 py-3 text-right sm:px-6">
+                    <!-- <div class="px-4 py-3 text-right sm:px-6">
                         <label for="lettersCount" class="block text-md font-medium text-gray-700">
                             عدد الحروف الإختيارية
                         </label>
@@ -193,10 +210,11 @@
                             class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-sm text-md border-gray-300 rounded-md">
                     </div>
                     <div class="px-4 py-3 text-right sm:px-6 inline-flex flex-row-reverse w-full gap-3">
-                        <label for="imageShow" class="w-full block text-md font-medium text-gray-700">إظهار الصورة</label>
+                        <label for="imageShow" class="w-full block text-md font-medium text-gray-700">إظهار
+                            الصورة</label>
                         <input x-model="imageShow" min="1" type="checkbox" id="imageShow"
                             class="w-fit mt-1 focus:ring-teal-500 focus:border-teal-500 block shadow-sm text-md border-gray-300 rounded-md">
-                    </div>
+                    </div> -->
                     <div class="px-4 py-3 text-right sm:px-6">
                         <button @click.stop="showModalSettings=false"
                             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">

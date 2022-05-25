@@ -6,20 +6,33 @@
     @font-face {
       font-family: "Tajawal";
       font-weight: 400;
-      src: url(/fonts/Tajawal-Regular.ttf) format("ttf");
+      src: url("../fonts/Tajawal-Regular.ttf");
     }
     @font-face {
       font-family: "Tajawal";
       font-weight: 500;
-      src: url(/fonts/Tajawal-Medium.ttf) format("ttf");
+      src: url("../fonts/Tajawal-Medium.ttf");
     }
     @font-face {
       font-family: "Tajawal";
-      font-weight: 600;
-      src: url(/fonts/Tajawal-Regular.ttf) format("ttf");
+      font-weight: 700;
+      src: url("../fonts/Tajawal-Bold.ttf");
     }
   }
 
 [x-cloak] {
     display: none;
 }
+/*
+#audio {
+    margin-top: -16px!important;
+}
+
+#audio wave {
+    height: 100%!important;
+}
+
+#audio>wave>wave{
+    border-right: none!important;
+}
+ */
