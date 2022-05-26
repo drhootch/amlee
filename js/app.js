@@ -51,6 +51,11 @@ document.addEventListener('alpine:init', () => {
             showModalSettings: false,
             showModalResult: this.$persist(false),
             waitingAnimation: false,
+            settings: {
+                uiLanguage: this.$persist('arabic'),
+                level: this.$persist(1),
+                category: this.$persist('all'),
+            },
             game: {
                 showAnswer: this.$persist(true),
                 state: this.$persist(null),
@@ -342,13 +347,13 @@ document.addEventListener('alpine:init', () => {
                         .add({
                             targets: '#gameBoard',
                             opacity: [0, '100%'],
-                            easing: 'spring(1, 80, 10, 0)'
+                            easing: 'spring(1, 80, 10, 0)',
                         })
                         .add({
                             targets: '#title',
                             scale: [0, '100%'],
-                            easing: 'easeOutElastic(1, .4)'
-                        }, '-=600')
+                            easing: 'easeOutElastic(.7, .4)',
+                        }, '-=1000')
                         .add({
                             targets: '#triesHearts>svg',
                             scale: [0, '100%'],
@@ -359,16 +364,17 @@ document.addEventListener('alpine:init', () => {
                         .add({
                             targets: '#photo',
                             scale: [0, '100%'],
-                            easing: 'easeOutElastic(1, .4)'
+                            easing: 'easeOutElastic(.7, .4)',
                         }, '-=600')
                         .add({
                             targets: '#question',
                             scale: [0, '100%'],
-                            easing: 'easeOutElastic(1, .4)'
+                            easing: 'easeOutElastic(.7, .4)',
                         }, '-=600')
                         .add({
                             targets: '#letters>button',
                             scale: [0, '100%'],
+                            easing: 'easeOutElastic(.7, .4)',
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
@@ -386,15 +392,16 @@ document.addEventListener('alpine:init', () => {
                         tl.add({
                             targets: '#textarea',
                             scale: [0, '100%'],
+                            easing: 'easeOutElastic(.7, .4)',
                             delay: function (el, i, l) {
                                 return i * 50;
                             },
                         }, '-=1200')
                     }
-
                     tl.add({
                         targets: '#buttons>button',
                         scale: [0, '100%'],
+                        easing: 'easeOutElastic(.7, .4)',
                         delay: function (el, i, l) {
                             return i * 50;
                         },
