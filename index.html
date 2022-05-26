@@ -40,7 +40,7 @@
             </div>
         </div>
         <template x-if="game.current">
-            <div
+            <div x-show="!waitingAnimation" id="gameBoard"
                 class="w-full flex flex-1 gap-14 lg:gap-20 justify-center flex-col lg:w-[1000px] lg:-mt-16 transition-transform">
                 <div class="flex flex-1 flex-col gap-6 lg:gap-12 lg:rounded-3xl lg:py-24 lg:px-24 lg:shadow-3xl lg:flex-initial">
                     <div class="w-full flex justify-between">
@@ -54,7 +54,7 @@
                                     <svg class="w-8 h-8 lg:w-12 lg:h-12" viewBox="-4 -4 52 46" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path class="transition"
-                                            :class="i*(1/parseInt(game.current.attempts))<=(triesRemaining/parseInt(game.current.attempts)) ? 'correct fill-red-400 stroke-red-500 stroke-[4px]' : 'wrong fill-white opacity-50'"
+                                            :class="i*(1/parseInt(game.current.attempts))<=(game.triesRemaining/parseInt(game.current.attempts)) ? 'correct fill-red-400 stroke-red-500 stroke-[4px]' : 'wrong fill-white opacity-50'"
                                             d="M11.4299 0C5.21768 0 0.179932 4.97041 0.179932 11.1027C0.179932 16.0529 2.14868 27.8016 21.5279 39.6781C21.8751 39.8886 22.2736 40 22.6799 40C23.0863 40 23.4848 39.8886 23.8319 39.6781C43.2112 27.8016 45.1799 16.0529 45.1799 11.1027C45.1799 4.97041 40.1422 0 33.9299 0C27.7177 0 22.6799 6.7289 22.6799 6.7289C22.6799 6.7289 17.6422 0 11.4299 0Z" />
                                     </svg>
                                 </template>
@@ -67,14 +67,14 @@
                             <div id="question" class="w-full" x-show="game.current.audio || game.current.q2">
                                 <button @click.stop="readWord(game.current.audio)"
                                     class="flex px-4 gap-2 flex-row-reverse w-full h-16 bg-teal-200 rounded-full border-dashed border-4 border-teal-600 text-3xl items-center">
-                                    <svg x-show="game.current.audio" :class="{'fill-teal-400':speaking}"
+                                    <svg x-show="game.current.audio"
                                     class="fill-teal-600 m-auto w-5 h-5 lg:w-7 lg:h-7" viewBox="0 0 45 45"
                                     fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                         d="M26.2434 1.87484C26.2434 1.50605 26.1346 1.14547 25.9307 0.838193C25.7269 0.530921 25.4369 0.290607 25.0972 0.147319C24.7575 0.00403053 24.3831 -0.035869 24.0208 0.0326113C23.6585 0.101092 23.3245 0.274911 23.0605 0.532323L12.087 11.2199H5.62359C4.13212 11.2199 2.70174 11.8126 1.64711 12.8675C0.592483 13.9224 0 15.3531 0 16.845V28.0576C0 29.5495 0.592483 30.9802 1.64711 32.0351C2.70174 33.09 4.13212 33.6827 5.62359 33.6827H12.0832L23.0567 44.464C23.3203 44.7225 23.6543 44.8973 24.0169 44.9667C24.3795 45.036 24.7544 44.9967 25.0947 44.8537C25.4351 44.7107 25.7256 44.4704 25.93 44.163C26.1343 43.8555 26.2433 43.4945 26.2434 43.1253V1.87484ZM30.4086 11.9587C30.5619 11.7658 30.7517 11.6049 30.9671 11.4854C31.1826 11.3659 31.4194 11.2901 31.6642 11.2622C31.909 11.2344 32.1569 11.255 32.3937 11.3231C32.6304 11.3911 32.8515 11.5051 33.0442 11.6587L33.0517 11.6624L33.0592 11.6699L33.0779 11.6849L33.1342 11.7337L33.3066 11.8837C33.4416 12.0112 33.6253 12.1837 33.839 12.4162C34.2626 12.8774 34.8137 13.5487 35.3574 14.4412C36.4483 16.2412 37.5056 18.915 37.5056 22.4963C37.5056 26.0738 36.4483 28.7514 35.3574 30.5514C34.92 31.2765 34.4113 31.9561 33.839 32.5801C33.6006 32.8392 33.3477 33.0846 33.0817 33.3152L33.0517 33.3414H33.0479C33.0479 33.3414 31.3721 34.2527 30.4124 33.0489C30.1037 32.6627 29.9601 32.1701 30.0128 31.6785C30.0654 31.1869 30.3101 30.7359 30.6935 30.4239L30.701 30.4164L30.6973 30.4201L30.7048 30.4164H30.701L30.7685 30.3564C30.836 30.2926 30.9485 30.1876 31.0872 30.0376C31.4887 29.5966 31.8453 29.1167 32.1519 28.6051C32.9392 27.3113 33.7565 25.2976 33.7565 22.4925C33.7565 19.6913 32.9392 17.6812 32.1519 16.3912C31.7664 15.7548 31.303 15.169 30.7723 14.6475C30.5673 14.4983 30.3946 14.309 30.2648 14.0912C30.1351 13.8734 30.0508 13.6315 30.0171 13.3801C29.9835 13.1288 30.0012 12.8732 30.0691 12.6289C30.137 12.3846 30.2538 12.1566 30.4124 11.9587H30.4086ZM36.7895 4.15861C36.5976 3.99975 36.3759 3.88074 36.1375 3.80853C35.8991 3.73633 35.6487 3.71239 35.4009 3.7381C35.1531 3.76381 34.913 3.83866 34.6945 3.95828C34.4759 4.0779 34.2834 4.23989 34.1282 4.43477C33.973 4.62966 33.8582 4.85353 33.7904 5.09332C33.7227 5.3331 33.7034 5.58398 33.7338 5.8313C33.7641 6.07862 33.8434 6.31741 33.967 6.53373C34.0906 6.75004 34.2561 6.93954 34.4538 7.09114L34.4951 7.12864L34.69 7.29739C34.8662 7.45489 35.1249 7.69864 35.4436 8.02865C36.0809 8.6924 36.9432 9.68991 37.8055 11.0062C39.5301 13.635 41.2546 17.505 41.2546 22.515C41.2643 26.6029 40.0642 30.6021 37.8055 34.0089C36.9432 35.3214 36.0809 36.3114 35.4436 36.9714C35.1421 37.2853 34.8269 37.5856 34.4988 37.8714L34.4576 37.9089H34.4538C34.0755 38.2221 33.8351 38.6714 33.7845 39.16C33.7338 39.6486 33.8768 40.1376 34.1828 40.5218C34.4889 40.906 34.9334 41.1547 35.4209 41.2145C35.9083 41.2743 36.3998 41.1404 36.7895 40.8415L36.9132 40.7402L37.1944 40.4965C37.4306 40.2827 37.7568 39.979 38.1429 39.5777C39.1821 38.4971 40.1184 37.322 40.9397 36.0677C43.5984 32.0489 45.0109 27.334 44.9999 22.515C45.0094 17.6916 43.5971 12.9724 40.9397 8.94741C40.1186 7.69162 39.1837 6.51413 38.1467 5.42987C37.7548 5.02254 37.3445 4.63337 36.917 4.26361L36.8307 4.19236L36.8045 4.16986L36.797 4.16236L36.7895 4.15861V4.15861ZM30.7048 14.5875L30.6973 14.5837L30.7048 14.5875Z" />
                                     </svg>
                                     <span x-text="game.current.q2" class="flex-1"></span>
-                                    <div x-show="game.current.audio && !game.current.q2" id="audio" class="w-full h-16"></div>
+                                    <div x-show="game.current.audio && !game.current.q2" id="audio" x-init="initAudioElement(game.current.audio);" class="w-full h-16"></div>
                                 </button>
                             </div>
                             <div class="flex flex-col gap-6 items-center">
@@ -97,7 +97,7 @@
                                     <div id="letters" class="flex flex-wrap gap-4 justify-center"
                                         @keyup.window="game.insertLetter(isLetter($event.key))">
                                         <template x-for="letter in game.choices">
-                                            <button @click.stop="game.insertLetter($el.innerText)"
+                                            <button @click.stop="playClickAudio();game.insertLetter($el.innerText)"
                                                 :class="(letter.length===1 ? 'w-10 lg:w-12 ' : ' ') + ((game.current.type === 'word_building' || letter !== game.userInput) ? 'bg-white text-teal-900' : 'selected '+(game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-teal-200 text-teal-900'))"
                                                 class="flex flex-col gap-2 justify-center items-center h-10 lg:h-12 px-4 py-4 rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.3)]">
                                                 <p x-text="letter" class="block text-center text-xl lg:text-3xl"></p>
@@ -107,32 +107,38 @@
                                 </template>
                                 <div id="buttons" class="flex gap-4 justify-start items-start">
                                     <template x-if="game.current.type==='word_building'">
-                                        <button @click.stop="game.removeLetter"
+                                        <button @click.stop="playClickAudio();game.removeLetter()"
                                             @keyup.backspace.window="game.removeLetter"
                                             class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl">
                                             <p class="block text-center text-xl lg:text-3xl text-white ">حذف</p>
                                         </button>
                                     </template>
                                     <template x-if="game.current.type==='text_write'">
-                                        <button @click.stop="game.userInput = ''"
+                                        <button @click.stop="playClickAudio();game.userInput = ''"
                                             class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl">
+                                            <svg width="20" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill="white" d="M33.17 14H2C2 14 0 14 0 11.9999C0 10.022 1.02053 10.0108 1.96823 10.0003L2 9.99992H33.17L26.586 3.41386L26.42 3.22586C26.1092 2.82387 25.963 2.31864 26.0112 1.81279C26.0594 1.30694 26.2983 0.838401 26.6794 0.502331C27.0606 0.166261 27.5553 -0.0121352 28.0632 0.00337411C28.5711 0.0188834 29.0541 0.227137 29.414 0.585836L39.414 10.5859L39.58 10.7739L39.708 10.9579L39.812 11.1539L39.9 11.3759L39.96 11.5979L39.994 11.8499L40 11.9999L39.992 12.1779L39.978 12.2979L39.928 12.5319L39.858 12.7419L39.75 12.9699L39.608 13.1899C39.5489 13.2693 39.4841 13.3441 39.414 13.4139L29.414 23.414L29.226 23.58C28.8412 23.8785 28.3607 24.0264 27.8746 23.9958C27.3886 23.9653 26.9304 23.7584 26.586 23.414L26.42 23.226C26.1215 22.8412 25.9737 22.3607 26.0042 21.8747C26.0348 21.3886 26.2416 20.9304 26.586 20.586L33.17 14Z" fill="black"/>
+                                            </svg>
                                             <p class="block text-center text-xl lg:text-3xl text-white ">مسح</p>
                                         </button>
                                     </template>
                                     <template x-if="game.current.type==='text_write' || game.current.type==='word_building'">
-                                        <button @click.stop="game.submit" @keyup.enter.window="game.submit"
+                                        <button @click.stop="playClickAudio();game.submit()" @keyup.enter.window="game.submit"
                                             :class="game.canSubmit ? 'bg-teal-700 text-white' : 'bg-gray-500 text-gray-200'"
                                             class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl">
                                             <p class="block text-center text-xl lg:text-3xl">إدخال</p>
+                                            <svg width="20" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path :class="game.canSubmit ? 'fill-white' : 'fill-gray-200'" d="M38 0C38.4899 6.46217e-05 38.9627 0.179913 39.3287 0.505435C39.6948 0.830956 39.9287 1.27951 39.986 1.76602L40 2.00002V15.0001C40.0001 16.7903 39.3144 18.5125 38.0839 19.8126C36.8533 21.1127 35.1714 21.892 33.384 21.9902L33 22.0002H6.83L13.414 28.5862C13.7584 28.9306 13.9652 29.3888 13.9958 29.8749C14.0263 30.361 13.8785 30.8415 13.58 31.2263L13.414 31.4143C13.0696 31.7586 12.6114 31.9655 12.1254 31.9961C11.6393 32.0266 11.1588 31.8788 10.774 31.5803L10.586 31.4143L0.586 21.4142C0.515942 21.3444 0.451101 21.2695 0.392 21.1902L0.25 20.9702L0.142 20.7422L0.072 20.5322L0.0219998 20.2982L0.0079999 20.1782L0 20.0002L0.00600004 19.8502L0.04 19.5982L0.0999999 19.3762L0.188 19.1542L0.292 18.9582L0.42 18.7742L0.586 18.5862L10.586 8.58608C10.9459 8.22738 11.4289 8.01912 11.9368 8.00361C12.4447 7.9881 12.9394 8.1665 13.3206 8.50257C13.7017 8.83864 13.9406 9.30718 13.9888 9.81303C14.037 10.3189 13.8908 10.8241 13.58 11.2261L13.414 11.4141L6.83 18.0002H33C33.7455 18.0002 34.4642 17.7226 35.0162 17.2217C35.5682 16.7207 35.9139 16.0321 35.986 15.2901L36 15.0001V2.00002C36 1.46958 36.2107 0.960868 36.5858 0.585792C36.9609 0.210716 37.4696 0 38 0V0Z"/>
+                                            </svg>
                                         </button>
                                     </template>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex-1 w-full h-full" x-show="game.current.image && imageShow">
+                        <div class="flex-1 w-full h-full" x-show="game.image!==null && game.image.length">
                             <div id="photo" x-show="!game.imageIsLoading" class="w-full h-full">
-                                <img class="bg-teal-500 border-8 border-white rounded-4 object-cover max-w-full max-h-full absolute top-0 left-0 right-0 m-auto"
-                                    x-bind:src="game.current.image" />
+                                <img x-init="$el.onload = () => game.imageIsLoading = false;" class="bg-teal-500 border-8 border-white rounded-4 object-cover max-w-full max-h-full absolute top-0 left-0 right-0 m-auto"
+                                    x-bind:src="game.image" />
                             </div>
                         </div>
                     </div>
@@ -154,7 +160,7 @@
                             x-text="resultTitle"></p>
                         <div id="resultStars" class="flex flex-row gap-5 justify-start items-start">
                             <template x-for="i in 5">
-                                <svg :class="i*.2<=(triesRemaining/game.current?.attempts) ?? 1 ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
+                                <svg :class="i*.2<=(game.triesRemaining/game.current?.attempts) ?? 1 ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
                                     class="w-8 h-8 lg:w-12 lg:h-12" viewBox="0 0 84 81" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -164,11 +170,13 @@
                         </div>
                         <div x-show="game.showAnswer" id="answer"
                             class="flex flex-col w-full gap-6 justify-start items-center">
-                            <div class="text-2xl lg:text-2xl text-teal-700 underline text-right w-full">إجابتك:</div>
-                            <div class="bg-gray-200 rounded-xl w-full text-center p-4">
-                                <div x-text="game.userInput" class="text-4xl lg:text-5xl text-black"></div>
+                            <div x-show="game.userInput.trim().length" class="flex flex-col w-full gap-6 justify-start items-center">
+                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">إجابتك:</div>
+                                <div class="bg-gray-200 rounded-xl w-full text-center p-4">
+                                    <div x-text="game.userInput" class="text-4xl lg:text-5xl text-black"></div>
+                                </div>
                             </div>
-                            <div class="text-2xl lg:text-2xl text-teal-700 underline text-right w-full">الإجابة الصحيحة:
+                            <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">الإجابة الصحيحة:
                             </div>
                             <div class="bg-green-200 rounded-xl w-full text-center p-4">
                                 <div x-text="game.current?.answer" class="text-4xl lg:text-5xl text-teal-700"></div>
@@ -178,6 +186,9 @@
                             <button @click.stop="game.nextGame"
                                 class="flex flex-row gap-2 justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-700 rounded-2xl">
                                 <p class="block text-center text-xl lg:text-4xl text-white">واصل</p>
+                                <svg width="20" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path :class="game.canSubmit ? 'fill-white' : 'fill-gray-200'" d="M38 0C38.4899 6.46217e-05 38.9627 0.179913 39.3287 0.505435C39.6948 0.830956 39.9287 1.27951 39.986 1.76602L40 2.00002V15.0001C40.0001 16.7903 39.3144 18.5125 38.0839 19.8126C36.8533 21.1127 35.1714 21.892 33.384 21.9902L33 22.0002H6.83L13.414 28.5862C13.7584 28.9306 13.9652 29.3888 13.9958 29.8749C14.0263 30.361 13.8785 30.8415 13.58 31.2263L13.414 31.4143C13.0696 31.7586 12.6114 31.9655 12.1254 31.9961C11.6393 32.0266 11.1588 31.8788 10.774 31.5803L10.586 31.4143L0.586 21.4142C0.515942 21.3444 0.451101 21.2695 0.392 21.1902L0.25 20.9702L0.142 20.7422L0.072 20.5322L0.0219998 20.2982L0.0079999 20.1782L0 20.0002L0.00600004 19.8502L0.04 19.5982L0.0999999 19.3762L0.188 19.1542L0.292 18.9582L0.42 18.7742L0.586 18.5862L10.586 8.58608C10.9459 8.22738 11.4289 8.01912 11.9368 8.00361C12.4447 7.9881 12.9394 8.1665 13.3206 8.50257C13.7017 8.83864 13.9406 9.30718 13.9888 9.81303C14.037 10.3189 13.8908 10.8241 13.58 11.2261L13.414 11.4141L6.83 18.0002H33C33.7455 18.0002 34.4642 17.7226 35.0162 17.2217C35.5682 16.7207 35.9139 16.0321 35.986 15.2901L36 15.0001V2.00002C36 1.46958 36.2107 0.960868 36.5858 0.585792C36.9609 0.210716 37.4696 0 38 0V0Z"/>
+                                </svg>
                             </button>
                         </div>
                     </div>

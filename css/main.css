@@ -492,40 +492,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-backdrop-sepia:  ;
 }
 
-.container {
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-  .container {
-    max-width: 640px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .container {
-    max-width: 1536px;
-  }
-}
-
 .fixed {
   position: fixed;
 }
@@ -735,24 +701,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   gap: 0.75rem;
 }
 
-.gap-12 {
-  gap: 3rem;
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
 .overflow-y-auto {
   overflow-y: auto;
 }
 
-.rounded-3xl {
-  border-radius: 1.5rem;
-}
-
 .rounded-full {
   border-radius: 9999px;
+}
+
+.rounded-3xl {
+  border-radius: 1.5rem;
 }
 
 .rounded-lg {
@@ -873,10 +831,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   fill: #fff;
 }
 
-.fill-teal-400 {
-  fill: #2dd4bf;
-}
-
 .fill-teal-600 {
   fill: #0d9488;
 }
@@ -887,6 +841,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .fill-slate-400 {
   fill: #94a3b8;
+}
+
+.fill-gray-200 {
+  fill: #e5e7eb;
 }
 
 .stroke-red-500 {
@@ -908,16 +866,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .p-12 {
   padding: 3rem;
-}
-
-.py-24 {
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-}
-
-.px-24 {
-  padding-left: 6rem;
-  padding-right: 6rem;
 }
 
 .px-4 {
@@ -1079,19 +1027,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: none;
 }
 
-/*
-#audio {
-    margin-top: -16px!important;
-}
-
 #audio wave {
-    height: 100%!important;
+  cursor: pointer!important;
 }
-
-#audio>wave>wave{
-    border-right: none!important;
-}
- */
 
 .hover\:bg-teal-700:hover {
   --tw-bg-opacity: 1;
@@ -1191,6 +1129,16 @@ Ensure the default browser behavior of the `hidden` attribute.
     border-radius: 1.5rem;
   }
 
+  .lg\:py-24 {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+
+  .lg\:px-24 {
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+
   .lg\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -1204,16 +1152,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   .lg\:py-3 {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
-  }
-
-  .lg\:py-24 {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
-  }
-
-  .lg\:px-24 {
-    padding-left: 6rem;
-    padding-right: 6rem;
   }
 
   .lg\:text-3xl {
