@@ -49,6 +49,7 @@ document.addEventListener('alpine:init', () => {
                 }
             },
             lock: true,
+            showModalAbout: false,
             showModalSettings: false,
             showModalResult: this.$persist(false),
             waitingAnimation: false,
