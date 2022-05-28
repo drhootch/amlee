@@ -51,21 +51,21 @@ document.addEventListener('alpine:init', () => {
             lock: true,
             showModalAbout: false,
             showModalSettings: false,
-            showModalResult: this.$persist(false),
+            showModalResult: false,
             waitingAnimation: false,
             settings: {
-                uiLanguage: this.$persist('arabic'),
-                level: this.$persist(1),
-                category: this.$persist('all'),
+                uiLanguage: 'arabic',
+                level: 1,
+                category: 'all',
             },
             game: {
-                state: this.$persist(null),
-                userInput: this.$persist(''),
-                image: this.$persist(null),
+                state: null,
+                userInput: '',
+                image: null,
                 imageIsLoading: true,
-                choices: this.$persist([]),
-                current: this.$persist(null),
-                triesRemaining: this.$persist(1),
+                choices: [],
+                current: null,
+                triesRemaining: 1,
                 get canSubmit() {
                     if (window.app.game.current.type === 'single_choice') {
                         return window.app.game.state !== 'wrong';
@@ -133,16 +133,18 @@ document.addEventListener('alpine:init', () => {
                         window.app.lock = false;
                     }
                 },
-                async nextGame(animateOut = true) {
+                async nextGame(animateOut = true, gameid) {
                     window.app.lock = true;
                     window.app.showModalResult = false;
                     window.app.animateGame(false, !animateOut).then(() => {
+                        window.app.game.image = null;
+                        window.app.game.imageIsLoading = false;
                         window.app.game.state = null;
                         window.app.game.userInput = '';
                         window.app.waitingAnimation = true;
-                        window.app.fetchGame().then(async (newGame) => {
+                        window.app.fetchGame(gameid).then(async (newGame) => {
                             window.app.game.current = newGame;
-                            initAudioElement(window.app.game.current.audio);
+                            Alpine.nextTick(() => initAudioElement(window.app.game.current.audio));
                             window.app.game.choices = window.app.game.current.type === 'text_write' ? [] : window.app.game.current.choices ? window.app.shuffle(window.app.game.current.choices) : window.app.generateLetters(window.app.game.current.answer, window.app.game.current.numberOfLetters ?? window.app.lettersCount)
                             window.app.game.imageIsLoading = true;
                             window.app.game.triesRemaining = window.app.game.current.attempts;
@@ -185,10 +187,14 @@ document.addEventListener('alpine:init', () => {
             scoreTexts: ["لم تُوفّق!", "يمكنك تقديم أفضل!", "محاولة مقبولة!", "جيد!", "جيد جداً!", "ممتاز!"],
             //Tools
             //API
-            fetchGame(level, options) {
+            fetchGame(gameid) {
                 return new Promise(async (resolve, reject) => {
                     try {
-                        let data = await fetch("https://amly.nbyl.me/server.php?type=word");
+                        let extra = ""
+                        if(!isNaN(gameid)){
+                            extra += "&gameid="+gameid;
+                        }
+                        let data = await fetch("https://amly.nbyl.me/server.php?type=word"+extra);
                         data = await data.json()
                         resolve({
                             type: data.type,
@@ -246,7 +252,34 @@ document.addEventListener('alpine:init', () => {
             },
             keypressed(e) {
                 if (e.altKey) {
-                    if (e.code === "KeyN") {
+                    if (e.code === "KeyQ") {
+                        window.app.game.nextGame(true, 0);
+                    }
+                    else if (e.code === "KeyW") {
+                        window.app.game.nextGame(true, 1);
+                    }
+                    else if (e.code === "KeyE") {
+                        window.app.game.nextGame(true, 2);
+                    }
+                    else if (e.code === "KeyR") {
+                        window.app.game.nextGame(true, 3);
+                    }
+                    else if (e.code === "KeyT") {
+                        window.app.game.nextGame(true, 4);
+                    }
+                    else if (e.code === "KeyY") {
+                        window.app.game.nextGame(true, 5);
+                    }
+                    else if (e.code === "KeyU") {
+                        window.app.game.nextGame(true, 6);
+                    }
+                    else if (e.code === "KeyI") {
+                        window.app.game.nextGame(true, 7);
+                    }
+                    else if (e.code === "KeyO") {
+                        window.app.game.nextGame(true, 8);
+                    }
+                    else if (e.code === "KeyN") {
                         window.app.game.nextGame();
                     }
                     else if (e.code === "KeyP") {
@@ -258,7 +291,9 @@ document.addEventListener('alpine:init', () => {
             //Animations
             animateResult() {
                 return new Promise((resolve, reject) => {
-                    var tl = anime.timeline();
+                    var tl = anime.timeline({
+                        duration: 800
+                    });
                     tl.add({
                         targets: '#resultTitle',
                         scale: [0, '100%'],
@@ -336,6 +371,7 @@ document.addEventListener('alpine:init', () => {
                     window.app.waitingAnimation = false;
                     var tl = anime.timeline({
                         direction: animateIn ? 'normal' : 'reverse',
+                        duration: 800
                     });
                     tl
                         .add({
