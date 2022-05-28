@@ -41,6 +41,7 @@ document.addEventListener('alpine:init', () => {
                 else {
                     Alpine.nextTick(() => window.app.animateGame());
                     if (window.app.showModalResult) {
+                        window.app.getScore()
                         Alpine.nextTick(() => window.app.animateResult())
                     } else {
                         window.app.lock = false;
@@ -57,7 +58,6 @@ document.addEventListener('alpine:init', () => {
                 category: this.$persist('all'),
             },
             game: {
-                showAnswer: this.$persist(true),
                 state: this.$persist(null),
                 userInput: this.$persist(''),
                 image: this.$persist(null),
@@ -99,11 +99,12 @@ document.addEventListener('alpine:init', () => {
                     window.app.game.userInput = window.app.game.userInput.slice(0, -1);
                 },
                 submit() {
-                    if (window.app.lock) return;
+                    if (window.app.lock || !window.app.game.userInput) return;
                     window.app.lock = true;
                     if (window.app.removeTashkeel(window.app.game.userInput).replace(/\s+/g, ' ').trim() === window.app.removeTashkeel(window.app.game.current.answer).replace(/\s+/g, ' ').trim()) {
                         window.app.game.state = "correct";
                         window.app.showModalResult = true;
+                        window.app.getScore()
                         Alpine.nextTick(() => window.app.animateResult())
                     }
                     else if (window.app.game.current.type === 'single_choice' || window.app.game.current.type === 'text_write' || window.app.game.userInput.length >= window.app.game.current.answer.length) {
@@ -112,8 +113,8 @@ document.addEventListener('alpine:init', () => {
                                 window.app.game.triesRemaining--;
                                 window.app.game.state = "wrong";
                                 if (window.app.game.triesRemaining <= 0) {
-                                    window.app.game.showAnswer = true;
                                     window.app.showModalResult = true;
+                                    window.app.getScore()
                                     Alpine.nextTick(() => window.app.animateResult())
                                 }
                                 else {
@@ -135,7 +136,6 @@ document.addEventListener('alpine:init', () => {
                     window.app.lock = true;
                     window.app.showModalResult = false;
                     window.app.animateGame(false, !animateOut).then(() => {
-                        window.app.game.showAnswer = false;
                         window.app.game.state = null;
                         window.app.game.userInput = '';
                         window.app.waitingAnimation = true;
@@ -161,7 +161,7 @@ document.addEventListener('alpine:init', () => {
             },
             //Tools
             readWord(word) {
-                audioElement.play();
+                audioElement.playPause();
             },
             //Static
             letters: [
@@ -170,26 +170,18 @@ document.addEventListener('alpine:init', () => {
                 'ش', 'س', 'ي', 'ب', 'ل', 'ا', 'ت', 'ن', 'م', 'ك', 'ط',
                 'ذ', 'ر', 'ة', 'و', 'ز', 'ظ', 'د',
             ],
-            get resultTitle() {
-                const percent = window.app.game.triesRemaining / window.app.game.current?.attempts ?? 1;//window.app.triesCount;
-                if (percent === 1) {
-                    return "ممتاز!";
-                }
-                if (percent >= .8) {
-                    return "جيد جداً!";
-                }
-                if (percent >= .6) {
-                    return "جيد!";
-                }
-                if (percent >= .4) {
-                    return "محاولة مقبولة!";
-                }
-                if (percent >= .2) {
-                    return "يمكنك تقديم أفضل!";
-                }
-
-                return "لم تُوفّق!";
+            remarks: [],
+            score: 0,
+            showResultDetails:false,
+            getScore() {
+                document.getElementById("result-modal").scrollIntoView(true);
+                window.app.showResultDetails = false;
+                remarksArray = [];
+                correct(window.app.game.userInput, window.app.game.current?.answer, window.app.game.current?.gameclass);
+                window.app.score = getScore(window.app.game.current?.answer, window.app.game.userInput, window.app.game.gameclass);
+                window.app.remarks = remarksArray;
             },
+            scoreTexts: ["لم تُوفّق!", "يمكنك تقديم أفضل!", "محاولة مقبولة!", "جيد!", "جيد جداً!", "ممتاز!"],
             //Tools
             //API
             fetchGame(level, options) {
@@ -206,7 +198,8 @@ document.addEventListener('alpine:init', () => {
                             image: data.img,
                             imageTag: data.imgTag,
                             audio: data.audio,
-                            attempts: data.attempts > 0 ? data.attempts : 1
+                            attempts: data.attempts > 0 ? data.attempts : 1,
+                            gameclass: data.gameclass,
                         });
                     }
                     catch (error) {
@@ -277,7 +270,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }, "-=600")
 
-                    if (window.app.game.showAnswer) {
+                    if (window.app.score<100) {
                         tl.add({
                             targets: '#answer',
                             opacity: [0, '100%'],

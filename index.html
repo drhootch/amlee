@@ -14,7 +14,14 @@
     <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
+
+	<script src="https://amly.nbyl.me/v1/js/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.2/dist/jBox.all.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+	<script src="js/diff_match_patch.js"></script>
+	<script src="js/ruleset.js"></script>
+	<script src="js/engine.js"></script>
+    <script src="js/app.js"></script>
 </head>
 
 <body class="bg-teal-400 font-tajawal h-screen" dir="rtl">
@@ -50,7 +57,7 @@
                         <template x-if="game.current.attempts > 1">
                             <div id="triesHearts"
                                 class="transition flex flex-row-reverse gap-2 justify-center items-start">
-                                <template x-for="i in parseInt(game.current.attempts)">
+                                <template x-for="i in parseInt(game.current.attempts)" x-key="i">
                                     <svg class="w-8 h-8 lg:w-12 lg:h-12" viewBox="-4 -4 52 46" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path class="transition"
@@ -80,7 +87,7 @@
                             <div class="flex flex-col gap-6 items-center">
                                 <template x-if="game.current.type==='word_building'">
                                     <div id="slots">
-                                        <template x-for="i in game.current.answer.length">
+                                        <template x-for="i in game.current.answer.length" x-key="i">
                                             <span x-text="game.userInput?.[i-1] ?? '_'"
                                                 class="text-4xl lg:text-5xl text-white"
                                                 :class="{'mr-4 decoration-white decoration-8 inline-block empty' : game.userInput?.[i-1] == null, 'text-red-500': game.state==='wrong', 'text-teal-700': game.state==='correct'}">
@@ -91,14 +98,14 @@
                                 <template x-if="game.current.type==='text_write'">
                                     <textarea id="textarea" x-model="game.userInput"
                                         class="w-full rounded-3xl p-4 text-4xl"
-                                        :class="game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-white text-teal-900'"></textarea>
+                                        :class="game.state==='wrong' ? 'bg-red-100 text-red-900': 'bg-white text-teal-900'"></textarea>
                                 </template>
                                 <template x-if="game.choices.length">
                                     <div id="letters" class="flex flex-wrap gap-4 justify-center"
                                         @keyup.window="game.insertLetter(isLetter($event.key))">
-                                        <template x-for="letter in game.choices">
+                                        <template x-for="letter in game.choices" x-key="letter">
                                             <button @click.stop="playClickAudio();game.insertLetter($el.innerText)"
-                                                :class="(letter.length===1 ? 'w-10 lg:w-12 ' : ' ') + ((game.current.type === 'word_building' || letter !== game.userInput) ? 'bg-white text-teal-900' : 'selected '+(game.state==='wrong' ? 'bg-red-200 text-red-900': 'bg-teal-200 text-teal-900'))"
+                                                :class="(letter.length===1 ? 'w-10 lg:w-12 ' : ' ') + ((game.current.type === 'word_building' || letter !== game.userInput) ? 'bg-white text-teal-900' : 'selected '+(game.state==='wrong' ? 'bg-red-100 text-red-900': 'bg-teal-200 text-teal-900'))"
                                                 class="flex flex-col gap-2 justify-center items-center h-10 lg:h-12 px-4 py-4 rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.3)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
                                                 <p x-text="letter" class="block text-center text-xl lg:text-3xl"></p>
                                             </button>
@@ -109,30 +116,30 @@
                                     <template x-if="game.current.type==='word_building'">
                                         <button @click.stop="playClickAudio();game.removeLetter()"
                                             @keyup.backspace.window="game.removeLetter"
-                                            :class="game.userInput!=='' ? 'bg-teal-600 text-white' : 'bg-gray-500 text-gray-200'"
-                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 bg-teal-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                            :class="game.userInput!=='' ? 'shadow-teal-500 shadow-md bg-red-200 text-red-500 focus:ring-red-500 border-red-500 border-2' : 'bg-gray-500 text-gray-200 border-gray-500 border-2'"
+                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2">
                                             <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path :class="game.userInput!=='' ? 'fill-white' : 'fill-gray-200'" d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z" fill="black"/>
+                                                <path :class="game.userInput!=='' ? 'fill-red-500' : 'fill-gray-200'" d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z" fill="black"/>
                                             </svg>
-                                            <p class="block text-center text-xl lg:text-3xl text-white ">حذف</p>
+                                            <p class="block text-center text-xl lg:text-3xl">حذف</p>
                                         </button>
                                     </template>
                                     <template x-if="game.current.type==='text_write'">
                                         <button @click.stop="playClickAudio();game.userInput = ''"
-                                            :class="game.userInput!=='' ? 'bg-teal-600 text-white' : 'bg-gray-500 text-gray-200'"
-                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                            :class="game.userInput!=='' ? 'shadow-teal-500 shadow-md bg-red-200 text-red-500 focus:ring-red-500 border-red-500 border-2' : 'bg-gray-500 text-gray-200 border-gray-500 border-2'"
+                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2">
                                             <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path :class="game.userInput!=='' ? 'fill-white' : 'fill-gray-200'" d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z" fill="black"/>
+                                                <path :class="game.userInput!=='' ? 'fill-red-500' : 'fill-gray-200'" d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z" fill="black"/>
                                             </svg>
-                                            <p class="block text-center text-xl lg:text-3xl text-white ">مسح</p>
+                                            <p class="block text-center text-xl lg:text-3xl">مسح</p>
                                         </button>
                                     </template>
                                     <template x-if="game.current.type==='text_write' || game.current.type==='word_building'">
                                         <button @click.stop="playClickAudio();game.submit()" @keyup.enter.window="game.submit"
-                                            :class="game.canSubmit ? 'bg-teal-700 text-white' : 'bg-gray-500 text-gray-200'"
-                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                                            :class="game.canSubmit ? 'shadow-teal-500 shadow-md bg-green-300 text-green-600 focus:ring-green-600 border-green-600 border-2' : 'bg-gray-500 text-gray-200 border-gray-500 border-2'"
+                                            class="flex flex-row gap-2 justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2">
                                             <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path :class="game.canSubmit ? 'fill-white' : 'fill-gray-200'" d="M32.6358 8.64691C32.8365 8.44209 33.0761 8.27938 33.3405 8.1683C33.6049 8.05722 33.8888 8 34.1756 8C34.4624 8 34.7463 8.05722 35.0107 8.1683C35.2751 8.27938 35.5147 8.44209 35.7154 8.64691C36.5567 9.49697 36.5684 10.8706 35.7449 11.7354L18.3525 32.2956C18.155 32.5125 17.9154 32.6867 17.6482 32.8078C17.3811 32.9288 17.0921 32.9941 16.7988 32.9996C16.5056 33.0051 16.2143 32.9508 15.9428 32.8398C15.6714 32.7289 15.4254 32.5637 15.2199 32.3545L4.63679 21.6302C4.22863 21.2139 4 20.6542 4 20.0712C4 19.4883 4.22863 18.9286 4.63679 18.5123C4.83752 18.3075 5.07711 18.1448 5.34151 18.0337C5.60591 17.9226 5.88981 17.8654 6.1766 17.8654C6.46339 17.8654 6.74729 17.9226 7.01169 18.0337C7.27609 18.1448 7.51568 18.3075 7.71641 18.5123L16.6935 27.61L32.577 8.71162C32.5953 8.68889 32.6149 8.66728 32.6358 8.64691Z"/>
+                                                <path :class="game.canSubmit ? 'fill-green-600' : 'fill-gray-200'" d="M32.6358 8.64691C32.8365 8.44209 33.0761 8.27938 33.3405 8.1683C33.6049 8.05722 33.8888 8 34.1756 8C34.4624 8 34.7463 8.05722 35.0107 8.1683C35.2751 8.27938 35.5147 8.44209 35.7154 8.64691C36.5567 9.49697 36.5684 10.8706 35.7449 11.7354L18.3525 32.2956C18.155 32.5125 17.9154 32.6867 17.6482 32.8078C17.3811 32.9288 17.0921 32.9941 16.7988 32.9996C16.5056 33.0051 16.2143 32.9508 15.9428 32.8398C15.6714 32.7289 15.4254 32.5637 15.2199 32.3545L4.63679 21.6302C4.22863 21.2139 4 20.6542 4 20.0712C4 19.4883 4.22863 18.9286 4.63679 18.5123C4.83752 18.3075 5.07711 18.1448 5.34151 18.0337C5.60591 17.9226 5.88981 17.8654 6.1766 17.8654C6.46339 17.8654 6.74729 17.9226 7.01169 18.0337C7.27609 18.1448 7.51568 18.3075 7.71641 18.5123L16.6935 27.61L32.577 8.71162C32.5953 8.68889 32.6149 8.66728 32.6358 8.64691Z"/>
                                             </svg>
                                             <p class="block text-center text-xl lg:text-3xl">إدخال</p>
                                         </button>
@@ -152,7 +159,7 @@
         </template>
         <!-- Modal -->
         <div x-show="showModalResult" @keydown.escape.prevent.stop="game.nextGame" role="dialog" aria-modal="true"
-            x-id="['modal-title']" :aria-labelledby="$id('modal-title')" class="fixed inset-0 overflow-y-auto z-10">
+            id="result-modal" aria-labelledby="result-modal" class="fixed inset-0 overflow-y-auto z-10">
             <!-- Overlay -->
             <div x-show="showModalResult" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
             <!-- Panel -->
@@ -162,10 +169,10 @@
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-12 overflow-y-auto">
                     <div class="flex flex-col gap-10 justify-center items-center bg-white rounded-3xl">
                         <p id="resultTitle" class="block text-center text-xl lg:text-4xl text-black "
-                            x-text="resultTitle"></p>
+                            x-text="scoreTexts[Math.floor((score/20))]"></p>
                         <div id="resultStars" class="flex flex-row gap-5 justify-start items-start">
-                            <template x-for="i in 5">
-                                <svg :class="i*.2<=(game.triesRemaining/game.current?.attempts) ?? 1 ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
+                            <template x-for="i in 5" x-key="i">
+                                <svg :class="i*20<=score ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
                                     class="w-8 h-8 lg:w-12 lg:h-12" viewBox="0 0 84 81" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -173,18 +180,41 @@
                                 </svg>
                             </template>
                         </div>
-                        <div x-show="game.showAnswer" id="answer"
+                        <div x-show="score<100" id="answer"
                             class="flex flex-col w-full gap-6 justify-start items-center">
-                            <div x-show="game.userInput.trim().length" class="flex flex-col w-full gap-6 justify-start items-center">
+                            <div x-show="game?.userInput?.trim?.().length" class="flex flex-col w-full gap-6 justify-start items-center">
                                 <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">إجابتك:</div>
-                                <div class="bg-gray-200 rounded-xl w-full text-center p-4">
-                                    <div x-text="game.userInput" class="text-4xl lg:text-5xl text-black"></div>
+                                <div class="bg-gray-200 rounded-xl w-full border-2 border-dashed border-gray-600 p-4">
+                                    <div x-text="game.userInput" class="text-2xl lg:text-3xl text-black"></div>
                                 </div>
                             </div>
                             <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">الإجابة الصحيحة:
                             </div>
-                            <div class="bg-green-200 rounded-xl w-full text-center p-4">
-                                <div x-text="game.current?.answer" class="text-4xl lg:text-5xl text-teal-700"></div>
+                            <div class="bg-green-200 rounded-xl w-full border-2 border-dashed border-green-600 p-4">
+                                <div x-text="game.current?.answer" class="text-2xl lg:text-3xl text-teal-700"></div>
+                            </div>
+                            <button x-show="!showResultDetails" @click.stop="showResultDetails=true" x-transition
+                                class="flex flex-row gap-2 justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400">
+                                <p class="block text-center text-xl lg:text-4xl text-white">إظهار التفاصيل</p>
+                            </button>
+                            <div x-show="showResultDetails" x-transition class="flex flex-col w-full gap-6 justify-start items-center">
+                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">تفاصيل:
+                                </div>
+                                <template x-for="remark in remarks" x-key="remark">
+                                    <div x-show="remark[0][0] && remark[0]?.[1] || remark[0][0] && !remark[0]?.[1] && !remark?.[1] || remark[0][0] && !remark[0]?.[1] && remark?.[1]" class="bg-gray-100 rounded-xl w-full border-2 border-dashed border-gray-400 p-4">
+                                        <div x-show="remark[0][0] && remark[0]?.[1]" class="text-2xl lg:text-3xl text-teal-700">
+                                            <span x-text="remark[0][0]" class="text-red-600"></span> ←
+                                            <span x-text="remark[0]?.[1]" class="text-green-600"></span>
+                                        </div>
+                                        <div x-show="remark[0][0] && !remark[0]?.[1] && !remark?.[1]" class="text-2xl lg:text-3xl text-teal-700">
+                                            <span x-text="remark[0][0]" class="text-black"></span>
+                                        </div>
+                                        <div x-show="remark[0][0] && !remark[0]?.[1] && remark?.[1]" class="text-2xl lg:text-3xl text-teal-700">
+                                            <span x-text="remark[0][0]" class="text-black"></span> :
+                                            <span x-text="remark[1]" class="text-2xl lg:text-3xl text-teal-700"></span>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                         <div id="resultButtons">
@@ -203,7 +233,7 @@
 
         <!-- Modal -->
         <div x-show="showModalSettings" @keydown.escape.prevent.stop="showModalSettings=false" role="dialog"
-            aria-modal="true" x-id="['modal-title']" :aria-labelledby="$id('modal-title')"
+            aria-modal="true" id="settings-modal" aria-labelledby="settings-modal"
             class="fixed inset-0 overflow-y-auto z-10">
             <!-- Overlay -->
             <div @click.stop="showModalSettings=false" x-show="showModalSettings" x-transition.opacity
@@ -231,11 +261,11 @@
                         <select x-model="settings.level"  :id="$id('settings')"
                             class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full h-8 shadow-sm text-md border-gray-300 rounded-md">
                             <option value="1">
-                                المستوى الأول
+                                مستوى آلي
                             </option>
                         </select>
                     </div>
-                    <div class="px-4 py-3 text-right sm:px-6" x-id="['settings']">
+                    <!-- <div class="px-4 py-3 text-right sm:px-6" x-id="['settings']">
                         <label :for="$id('settings')" class="block text-md font-medium text-gray-700">
                             التصنيفات
                         </label>
@@ -254,7 +284,7 @@
                                 أرقام
                             </option>
                         </select>
-                    </div>
+                    </div> -->
                     <div class="px-4 py-3 text-right sm:px-6 flex gap-4">
                         <button @click.stop="showModalSettings=false"
                             class="gap-2 items-center inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
