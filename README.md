@@ -11,5 +11,5 @@ this project primarily uses the following libs:
 
 ## Install instruction :
 ```
-npm run watch
+npm run build
 ```
