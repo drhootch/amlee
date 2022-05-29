@@ -1,3 +1,4 @@
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var audio = new Audio("../assets/click.mp3");
 function playClickAudio() {
     audio.currentTime = 0;
@@ -51,21 +52,21 @@ document.addEventListener('alpine:init', () => {
             lock: true,
             showModalAbout: false,
             showModalSettings: false,
-            showModalResult: false,
+            showModalResult: this.$persist(false),
             waitingAnimation: false,
             settings: {
-                uiLanguage: 'arabic',
-                level: 1,
-                category: 'all',
+                uiLanguage: this.$persist('arabic'),
+                level: this.$persist(1),
+                category: this.$persist('all'),
             },
             game: {
-                state: null,
-                userInput: '',
-                image: null,
+                state: this.$persist(null),
+                userInput: this.$persist(''),
+                image: this.$persist(null),
                 imageIsLoading: true,
-                choices: [],
-                current: null,
-                triesRemaining: 1,
+                choices: this.$persist([]),
+                current: this.$persist(null),
+                triesRemaining: this.$persist(1),
                 get canSubmit() {
                     if (window.app.game.current.type === 'single_choice') {
                         return window.app.game.state !== 'wrong';
@@ -258,7 +259,7 @@ document.addEventListener('alpine:init', () => {
                     else if (e.code === "KeyW") {
                         window.app.game.nextGame(true, 1);
                     }
-                    else if (e.code === "KeyE") {
+                    else if (e.code === "KeyD" || e.code === "KeyD") {
                         window.app.game.nextGame(true, 2);
                     }
                     else if (e.code === "KeyR") {
@@ -275,9 +276,6 @@ document.addEventListener('alpine:init', () => {
                     }
                     else if (e.code === "KeyI") {
                         window.app.game.nextGame(true, 7);
-                    }
-                    else if (e.code === "KeyO") {
-                        window.app.game.nextGame(true, 8);
                     }
                     else if (e.code === "KeyN") {
                         window.app.game.nextGame();
@@ -296,11 +294,11 @@ document.addEventListener('alpine:init', () => {
                     });
                     tl.add({
                         targets: '#resultTitle',
-                        scale: [0, '100%'],
+                        scale: [0, 1],
                         easing: 'easeOutElastic(1, .4)'
                     }).add({
                         targets: '#resultStars>.correct',
-                        scale: [0, '100%'],
+                        scale: [0, 1],
                         delay: function (el, i, l) {
                             return i * 100;
                         }
@@ -309,7 +307,7 @@ document.addEventListener('alpine:init', () => {
                     if (window.app.score<100) {
                         tl.add({
                             targets: '#answer',
-                            opacity: [0, '100%'],
+                            opacity: [0, 1],
                             delay: function (el, i, l) {
                                 return i * 100;
                             },
@@ -317,13 +315,13 @@ document.addEventListener('alpine:init', () => {
                     }
                     tl.add({
                         targets: '#resultStars>.wrong',
-                        opacity: [0, '100%'],
+                        opacity: [0, 1],
                         delay: function (el, i, l) {
                             return i * 100;
                         }
                     }, "-=600").add({
                         targets: '#resultButtons>button',
-                        scale: [0, '100%'],
+                        scale: [0, 1],
                         delay: function (el, i, l) {
                             return i * 100;
                         },
@@ -376,34 +374,34 @@ document.addEventListener('alpine:init', () => {
                     tl
                         .add({
                             targets: '#gameBoard',
-                            opacity: [0, '100%'],
+                            opacity: [0, 1],
                             easing: 'spring(1, 80, 10, 0)',
                         })
                         .add({
                             targets: '#title',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             easing: 'easeOutElastic(.7, .4)',
                         }, '-=1000')
                         .add({
                             targets: '#triesHearts>svg',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
                         }, '-=900')
                         .add({
                             targets: '#photo',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             easing: 'easeOutElastic(.7, .4)',
                         }, '-=600')
                         .add({
                             targets: '#question',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             easing: 'easeOutElastic(.7, .4)',
                         }, '-=600')
                         .add({
                             targets: '#letters>button',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             easing: 'easeOutElastic(.7, .4)',
                             delay: function (el, i, l) {
                                 return i * 100;
@@ -412,7 +410,7 @@ document.addEventListener('alpine:init', () => {
                     if (window.app.game.current?.type === 'word_building') {
                         tl.add({
                             targets: animateIn ? '#slots>span' : '#slots',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             delay: function (el, i, l) {
                                 return i * 50;
                             },
@@ -421,7 +419,7 @@ document.addEventListener('alpine:init', () => {
                     else if (window.app.game.current?.type === 'text_write') {
                         tl.add({
                             targets: '#textarea',
-                            scale: [0, '100%'],
+                            scale: [0, 1],
                             easing: 'easeOutElastic(.7, .4)',
                             delay: function (el, i, l) {
                                 return i * 50;
@@ -430,7 +428,7 @@ document.addEventListener('alpine:init', () => {
                     }
                     tl.add({
                         targets: '#buttons>button',
-                        scale: [0, '100%'],
+                        scale: [0, 1],
                         easing: 'easeOutElastic(.7, .4)',
                         delay: function (el, i, l) {
                             return i * 50;
