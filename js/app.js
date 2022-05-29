@@ -95,6 +95,7 @@ document.addEventListener('alpine:init', () => {
                 Alpine.nextTick(() => window.app.updateInterface())
                 this.$watch('lang', value => {
                     window.app.updateInterface()
+                    window.app.game.nextGame();
                 })
 
                 if (window.app.game.current === null || (window.app.game.current.type !== 'text_write' && !window.app.game.choices.length)) {
@@ -214,11 +215,11 @@ document.addEventListener('alpine:init', () => {
                             window.app.game.imageIsLoading = true;
                             window.app.game.triesRemaining = window.app.game.current.attempts;
                             let tmp_img = window.app.game.image;
-                            if (window.app.game.current.imageTag?.length) {
-                                window.app.game.image = await window.app.fetchImage(window.app.game.current.imageTag);
+                            if (window.app.game.current.imgTag?.length) {
+                                window.app.game.image = await window.app.fetchImage(window.app.game.current.imgTag);
                             }
                             else {
-                                window.app.game.image = window.app.game.current.image?.length ? window.app.game.current.image : null;
+                                window.app.game.image = window.app.game.current.img?.length ? window.app.game.current.img : null;
                             }
                             if (tmp_img === window.app.game.image) window.app.game.imageIsLoading = false;
 
@@ -502,7 +503,7 @@ document.addEventListener('alpine:init', () => {
                 })
             },
             updateInterface() {
-                document.querySelector('html').setAttribute('dir', langDirection[window.app.lang])
+                document.documentElement.setAttribute('dir', langDirection[window.app.lang])
                 document.querySelector('title').innerHTML = window.app.i18n.appTitle
                 var changes = [
                     {
