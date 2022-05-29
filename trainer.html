@@ -14,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– 
+  ––––––––––––––––––––––––––––––––––––––––––––––––––
   <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">-->
 
   <!-- CSS
@@ -22,8 +22,8 @@
   <link rel="stylesheet" href="//amly.app/dictation/css/normalize.css">
   <link rel="stylesheet" href="//amly.app/dictation/css/skeleton.css">
   <link rel="stylesheet" href="//amly.app/dictation/css/style.css">
-  
-  
+
+
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -50,7 +50,7 @@
 		<h2>المدرب الإملائي</h2><!---->
 		<input type="checkbox" id="ignore-punctuation" checked> تجاهل علامات الترقيم.
 	</div>
-	
+
 	<hr>
 
 	<div class="row"  style="margin: 20px;">
@@ -62,14 +62,14 @@
 
 		</div>
 		<div class="nine columns centric"><div id="waveform"></div></div>
-		
+
 	</div>
-	
+
 	<div id="games-template" class="row">
 
 	  <textarea onchange="" dir="rtl" id="text-input" class="keyboardInput " style="width: 100%;background: #eff7f5;text-align: center; font-size: 1.4em;"> </textarea>
 	  <!--<textarea onchange="" dir="rtl" id="text-input" class="keyboardInput " style="width: 100%;background: #eff7f5;text-align: center; font-size: 1.4em;"></textarea>-->
-	  
+
 	  <div id="control" class="row centric">
 		    <button onclick="$('.analysisbox').toggle();">تحليل الإجابة <i class="fa-solid fa-circle-info"></i></button>
 			<button type="button" class="btn btn-success" onclick="newGame();" >من جديد</button>
@@ -77,12 +77,12 @@
 			<!-- Button trigger modal -->
 			<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#HelpModal">Help</button>-->
 	  </div>
-	  
+
 	  <p id="correction" class="centric" style="font-size: 2em;margin: 2em 0;border: 1px solid #444;padding: 1em 0; border-radius: 2em;"></p>
-	  
+
 	</div>
-	
-	
+
+
 	<div class="analysisbox row" style="display:none;">
 
 		<h4>الجواب:</h4>
@@ -98,27 +98,27 @@
 		</div>
 		<hr/>
 
-		<p class="centric" style="background: #eee;border: 1px solid #444;">
+		<!--<p class="centric" style="background: #eee;border: 1px solid #444;">
 			<b>Hotkeys:</b> (1): new game | (0): replay audio | (+): increase play rate | (-): decrease play rate | (2) : advance the play | (3) : return back the play
-		</p>
+		</p>-->
 		<hr />
 
 	</div>
 
-  	
+
 	<hr />
-			
+
 	<div class="row footer" style="margin-top: 5%">
 	    <p id="footer"></p>
 
 	</div>
-	
+
 	<audio id="bip" src="//amly.app/dictation/rsc/button.mp3"></audio>
-	
+
 	<script src="https://amly.app/v1/js/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.2/dist/jBox.all.min.js"></script>
-	
-	
+
+
 	<script src="https://unpkg.com/wavesurfer.js"></script>
 	<script src="https://wavesurfer-js.org/example/stretcher/soundtouch.js"></script>
 
@@ -126,17 +126,17 @@
 	<script src="js/diff_match_patch.js"></script>
 	<script src="js/engine.js"></script>
 	<script src="js/ruleset.js"></script>
-	
+
 	<script>
 		// Create an audio player instance
 		let wavesurfer = {};
 
 		window.onload = function() {
-			
+
 			$('#correctIt').on("click",function(e) {
 
 				var revision = correct($('#text-input').val(), $('#text-correct').val());
-				
+
 				$("#analyzedInput").html('<table>'+
 					'<tr id="#"><td style="background: #eee;"><b>مقارنة الفروق: </b></td><td>'+revision[0]+"</td></td>"+
 					'<tr id="#"><td style="background: #eee;"><b>بناء الكلمات وتحليل الأخطاء: </b></td><td>'+revision[1]+"</td></td>"+
@@ -145,7 +145,7 @@
 					//'<tr id="#"><td style="background: #eee;"><b>Lemma</b></td><td>'+revision[4]+"</td></td>"+
 					'</table>');
 				$("#correction").html(revision[2]);
-				
+
 				// Enable Tooltip
 				new jBox('Tooltip', {
 				  attach: '.tooltip'
@@ -160,7 +160,7 @@
 			$('#text-input').prop('selectionEnd', 13); // cursor on the input?
 
 			//params['ignorePunctuation'] = $("#ignore-punctuation").is(':checked');
-			
+
 			$("#ignore-punctuation").change(function() {
 				console.log("ignorePunctuation changed to "+ this.checked);
 				params['ignorePunctuation'] = this.checked;
@@ -179,19 +179,19 @@
 				//height: 200,
 				barGap: 3,
 			});
-			
+
 			newGame();
 			//wavesurfer.play(); // needs a permission
 			$('a[data-action="play"]').click(function(){
 					wavesurfer.playPause();
 			});
-			
+
 			$("wave > wave").css("border","none!important");
-			
+
 			//$("#text-correct").val("مَرْحَبًا مُصْطَفى، اِسْمي عَبْدُ الرّحْمَنِ اليَوْمَ يَوْمُ الأَحَدِ وَتَجْرِبَةُ أَمينو صَديقي وَسَعيد. ظَرْفٌ وَهَذِهِ سَبُّورَةٌ وَهَذا ذِئْبٌ وَبِئْرٌ وَشُؤْمٌ وَفَأْلٌ وَتِلْكَ بِنْتٌ.");
 			//$("#text-input").val("مرحبن؛ إسمي عبد الرحمان، اليوم يوم واحد تجربة ثبثصب سأمينوجي صديقي و سعيد ضرف وهاذه صبورة وهاذا زيب وبءر وشئم وفال و تلك بنة");
 		}
-		
+
 
 
 		function correct(dinput, validText, gametype) {
@@ -233,9 +233,9 @@
 
 
 			var output = printDiffs(diffs, wordset);
-			
+
 			//var score = getScore(validText, dinput);
-			
+
 			//pushGameScore(window.app.game.current.gameid, score);
 			//logData(dinput, output, score, wordset);
 
@@ -245,7 +245,7 @@
 			return output;
 
 		}
-		
+
 		function getRecord() {
 
 			var record = {"text":"","audio":"","image":"", "level":"","game":""};
@@ -270,31 +270,31 @@
 
 			return record;
 		}
-		
+
 		/* -----------------------------------------------------------------------------
 			Generate a new game
 			----------------------------------------------------------------------------- */
 
 		function newGame(type, word) {
 			var record = getRecord();
-			
+
 			console.log("== Play ==");
 			console.log(record);
-			
+
 			wavesurfer.load( record["audio"] );
 			wavesurfer.play();
 			$("#text-correct").val(record["text"]);
-			
+
 			$("#text-input").val("");
 			$("#correction").html("");
 			$("#analyzedInput").html("");
 			$("#remarks-punctuation").html("");
 			$("#remarks-other").html("");
-			
+
 		}
-		
+
 		$(document).keydown(function(e) {
-			
+
 			if(e.which == 107) { // + increase voice
 				increasePlayRate();
 				return false;
@@ -310,11 +310,11 @@
 				console.log("New game");
 				return false;
 			}else if(e.which == 98) { // play / pause
-				wavesurfer.skipForward(1) 
+				wavesurfer.skipForward(1)
 				console.log("Skip forward audio with 1 second");
 				return false;
 			}else if(e.which == 99) { // play / pause
-				wavesurfer.skipBackward(1) 
+				wavesurfer.skipBackward(1)
 				console.log("Skip backward audio with 1 second");
 				return false;
 			}
