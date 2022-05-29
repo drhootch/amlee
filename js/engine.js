@@ -1,7 +1,29 @@
-    let remarksArray = [];
+
+
     /* -----------------------------------------------------------------------------
-	Onload
+		Onload
 	----------------------------------------------------------------------------- */
+
+    var playedGames = []; // make it persistant
+    var maxPlayedGames = 100; // includ 100 game
+
+    function pushGame(gameid, score){
+        if(playedGames.length >= maxPlayedGames)
+            playedGames.shift();
+        return playedGames.push([gameid, score]);
+    }    // in correct() if score
+
+    function averageScore(interval){
+        if(interval > maxPlayedGames) interval = maxPlayedGames;
+        var finalScore = 0;
+        for(var i=0; i<interval; i++){
+            finalScore += playedGames[i][1];
+        }
+        return (finalScore/interval).toFixed(2);
+    }
+
+
+	let remarksArray = [];
 
     window.onload = function() {
 
@@ -13,8 +35,8 @@
          Cookies: To provide the server with any necessary informations
         ----------------------------------------------------------------------------- */
 
-    var params = {};
-    var track = {"words":[], "rules": []}; // track identified Errors
+    let params = {}; // persistant information accessible by the server through cookies
+    let track = {"words":[], "rules": []}; // track identified Errors
 
     function chargeProfile(){
 
@@ -25,21 +47,21 @@
             loc = getLocation();
             params = {
                 "profileid": (Math.floor(Math.random() * (100000 - 0)) + 100000) +''+ Date.now(), // Random UserID
-                'ignoreDeclensions': true, // Ignore correcting declensions
+                'ignoreDiacritics': true, // Ignore correcting diacritics
                 'ignorePunctuation': true, // Ignore correcting punctuation
-                'indicateDeclensions': true, // Indicate the right declensions at the end
+                'indicateDiacritics': true, // Indicate the right diacritics when showing the answer
                 'lang': 'ar',
-                'playrate': 1,
+                'playrate': 1, // Audio speed controllable with hotkeys
                 'volume': 1,
                 'country': loc["country"],
                 'variety': -1, // linguistic variety, could be based on region e.g.: Cairo dialect or Urdu
                 'level': -1, // 0-8
                 'nbrOfTrackedWords': 100, // number of misspelled words to track
-                'usesScreenReader': false, // in order to hide some details or visual games for Visual impairment or blindness
+                'usesScreenReader': false, // in order to hide some details or visual games for cases of visual impairment or blindness
             };
             track = {
-                    "rules": [],
-                    "words": [], //misspelled words should be a stack of 100? if push pop && with weight of reoccurance if he makes a lot of mistakes on the same word
+                "rules": [],
+                "words": [], //misspelled words should be a stack of 100? if push pop && with weight of reoccurance if he makes a lot of mistakes on the same word
             };
             updateStorage('params');
 
@@ -62,14 +84,13 @@
 
 
     /* -----------------------------------------------------------------------------
-        Normalize Time
-        وثلث، إلا ربع،
-        * Add rules to correct فع ونصب ثلاثون ثلاثين
+        Normalize Time وثلث، إلا ربع،
+        * Add rules to correct رفع ونصب ثلاثون ثلاثين
         ----------------------------------------------------------------------------- */
 
     function normalizeTime(text) {
 
-        return text.replace('الساعة','').replace('ربع','خمس عشرة دقيقة').replace('نصف', 'ثلاثون دقيقة');
+        return text.replace('الساعة','').replace('ربع','خمس عشرة دقيقة').replace('نصف', 'ثلاثون دقيقة').replace('دقيقة', '').replace('دقائق', '');
 
     }
 
@@ -86,12 +107,14 @@
 
 
         dinput = filterInput(dinput);
-        model_declension = filterInput(validText); 	//with declensions
+        model_declension = filterInput(validText); 	//with diacritics
 
-        if(gametype == "time")
+        if(gametype == "time") {
             dinput = normalizeTime(dinput);
+            validText = normalizeTime(validText);
+        }
 
-        if(true || params['ignoreDeclensions']){ // clean declensions
+        if(true || params['ignoreDiacritics']){ // clean diacritics
             validText = cleanText(validText);
             dinput = cleanText(dinput);
         }
@@ -121,7 +144,7 @@
 
         var output = printDiffs(diffs, wordset);
 
-        //logData(dinput, processed, score["percent"], wordset);
+        logData(dinput, output, getScore(validText, dinput), wordset);
 
         console.log("track");
         console.log(getStorage("track"));
@@ -262,17 +285,10 @@
                 j++;
                 parts.push([input[0], currentChar]);
 
-                // if punctuation and not at the end of the whole text and is not followed by a space
-                //if(i<input[1].length+1)
-                    //input[1].charAt(i))
-
             } else if (currentChar == " ") {
                 if(input[0] != -1){ // @torevise space is not to remove
                     j++;
-                    //if(!(input[1].charAt(i+1)).match(/[،,:؟؛!.]/g)) // to avoid space-punctuation-space
-                    //if(i != input[1].length)
                     parts.push([input[0], ""]);
-                    // if followed by a punctuation mark an error
                 }
 
             } else { // not a space or a punctuation
@@ -367,21 +383,10 @@
                         revision[2] += '<span '+note+' style="color:orange;background:#eee;">'+part[1]+'</span>';
 
                 }else if(part[0] == -1){
-                    //if(note != "")
-                    //if( ( ((rj+1) in word) && (word[rj+1][0] == 1)) ){
 
-                    //}else
                         if(!("hidden" in part))
                             revision[2] += '<span '+note+' style="color:red;background:#eee;">'+part[1]+'</span>';
 
-                    /*else{
-                        if(rj+1 in word){ // alif in هاذا
-                            if(word[rj+1][0] == 0)
-                                pushRemark(word[rj+1], "خطأ");
-                        }else{ //a part to delete at the end like نكتبوا
-                            revision[2] += '<span style="color:red;background:#eee;">'+part[1]+'</span>';
-                        }
-                    }*/
                 }else if(part[0] == 1){
                     revision[2] += '<span '+note+' style="color:green;background:#eee;">'+part[1]+'</span>';
                 }
@@ -433,16 +438,13 @@
                             trackRule("metathesis", irule, -0.1);
                         }
                     }
-                    // we consider correction only if he writes the full word correctly?
+
                     if(word["string"]["valid"] == word["string"]["input"] && word["string"]["valid"].match(rule[1])){
-                        //either verify the word[ipart][0] == 0 or word::input = word::valid
                         trackRule("metathesis", irule, 0.02);
                     }
                 });
             });
 
-            //metathesis with harakat
-            // TODO check if it's one alif or one yaa or one waw and then parse?
             $.each(word, function(ipart, part) {
                 $.each(ruleset['metathesis-harkat'], function(irule, rule) {
                     // Compared with
@@ -452,15 +454,6 @@
                             word[ipart]["hidden"] = 1;
                             pushRemark(word[ipart-1], rule[2]);
 
-                            /*
-                            if((3 in rule) && ("POS" in rule[3])){
-                                if(rule[3]["POS"] == getMorphology(word))
-                                    console.log("خطأ التاء مع "+word+" / "+rule[3]["POS"]);
-                                    $("#remarks-other").append("خطأ التاء مع "+word+" / "+rule[3]["POS"]+"<br/>");
-                            }else{
-
-                                $("#remarks-other").append(rule[2]+"<br/>");
-                            }*/
 
                             //make cases & break
                             if( 3  in rule){
@@ -504,13 +497,6 @@
                     }
             });
 
-            /*$.each(ruleset['separated'], function(irule, rule) {
-                if( (word["string"]["valid"] == word["string"]["input"])
-                    && word["string"]["input"].match(rule[0])){
-                        pushRemark(word, rule[1]);
-                        $("#remarks-other").append(rule[2]+"<br/>");
-                    }
-            });*/
 
             // Compare to lemma
             $.each(ruleset['lemma-pattern'], function(irule, rule) {
@@ -522,20 +508,17 @@
             });
 
 
-            //if(!("1" in word) && (!("remark" in word) || (word[0]["remark"]==""))){
             if(!("1" in word) && !("remark" in word[0])){
                 if(word[0][0] == 0){
-                    //pushRemark(word[0], '<b>'+word[0][1]+"</b>"+" كلمة سليمة");
                     $("#remarks-other").append('<b>'+word[0][1]+"</b>"+" كلمة سليمة");
-                    //remarksArray.push([word[0][1], 'كلمة سليمة']);
                 }else if(word[0][0] == 1){
                     pushRemark(word[0], '<b>'+word[0][1]+"</b>"+" كلمة منسية");
                     $("#remarks-other").append('<b>'+word[0][1]+"</b>"+" كلمة منسية");
-                    remarksArray.push([[word[0][1]], 'كلمة منسية']);
+                    remarksArray.push([[word[0][1]], 'كلمة خاطئة أو منسية']);
                 }else if(word[0][0] == -1){
-                    pushRemark(word[0], '<b>'+word[0][1]+"</b>"+" كلمة خاطئة أو غير موجودة");
-                    $("#remarks-other").append('<b>'+word[0][1]+"</b>"+" كلمة خاطئة أو غير موجودة");
-                    remarksArray.push([[word[0][1]], 'كلمة خاطئة أو غير موجودة']);
+                    pushRemark(word[0], '<b>'+word[0][1]+"</b>"+" إضافة خاطئة");
+                    $("#remarks-other").append('<b>'+word[0][1]+"</b>"+" إضافة خاطئة");
+                    remarksArray.push([[word[0][1]], 'إضافة خاطئة']);
                 }
 
             }
@@ -567,7 +550,6 @@
         $.each(wordset, function(iword, word) {
 
             // Punctuation error: either missing or addition
-            //console.log(word);
             if(word.length == 1 && word[0][0] != 0 && (used_punctuation = word[0][1].match(ruleset['punctuation']['regex']))){
                 $.each(used_punctuation, function(isymbole, symbole) {
                     //console.log("punctuation");
@@ -590,12 +572,7 @@
     /* -----------------------------------------------------------------------------
          trackMisspelledWords
          * track["words"] can include 100 word if a word reorccur we add weight to it
-         * if the array filled we remove the minimum weight ie the less occuring errors
-         * [["cat", 2], ["dog", 1]]
-         * Save the array sorted which would make less effort and add at the end
-         * [["cat", 2], ["bird", 7], ["dog",1]].sort(function(a, b) { return b[1] - a[1]; });
-
-        * to improve: if array is full and a new word is added once, it will be the same word changing all the time
+         * if the array is full we remove the minimum weight ie the less occuring errors
         ----------------------------------------------------------------------------- */
     function trackMisspelledWords(word, weight){
 
@@ -633,8 +610,7 @@
         if(!exists){ // it doesn't exist
 
             if(wordsNmbr >= params["nbrOfTrackedWords"]){ // remove the less occuring word and then adding it
-                //if(minimum[0]<2){ //if the minimum value occured only once so it's optional to keep it or not
-                // diversify training words by accepting it even if the available minimum occured more
+
                 track["words"][minimum[0]][0] = word;
                 track["words"][minimum[0]][1] = minimum[1];
                 updateStorage("track");
@@ -693,7 +669,7 @@
         jQuery.ajax({
             type: "GET",
             async: false,
-            url: '//amly.nbyl.me/dictation/api.php',
+            url: '//amly.app/dictapi.php',
             data:  {"word": word, 'query':"POS"},
             success: function (data)
                 {
@@ -710,36 +686,39 @@
     /* -----------------------------------------------------------------------------
          Get lemma
         ----------------------------------------------------------------------------- */
-    function lemmatize(text){
+	function lemmatize(text){
 
-      var output = [];
+		var output = [];
 
-        /*
-        jQuery.ajax({
-            type: "POST",
-            async: false,
-            url: "https://farasa.qcri.org/lemmatization/analyze/",
-            data:  {"text" : text, "task" : "lemmatization", "API_KEY": "hoxIHPHtKQJlnwPvtr"},
-            //contentType: "application/json; charset=utf-8",
-            //dataType: "json",
-            success: function (result)
-                {
-                    output = JSON.parse(result);
-                    output = output["text"].split(" ");
-                },
-            error: function (err)
-            { console.log(err.responseText); }
-        });
-        */
-        //console.log(" == lemmatize ==");
-        //console.log(output);
-        return output;
+		return text.split(" ");
 
-    }
+
+		jQuery.ajax({
+			type: "POST",
+			async: false,
+			url: "https://farasa.qcri.org/lemmatization/analyze/",
+			data:  {"text" : text, "task" : "lemmatization", "API_KEY": "hoxIHPHtKQJlnwPvtr"},
+			//contentType: "application/json; charset=utf-8",
+			//dataType: "json",
+			success: function (result)
+				{
+					output = JSON.parse(result);
+					output = output["text"].split(" ");
+				},
+		error: function (err)
+			{ console.log(err.responseText); }
+		});
+
+		console.log(" == lemmatize ==");
+		console.log(output);
+		return output;
+
+	}
+
 
 
     /* -----------------------------------------------------------------------------
-        Returns useful hints for the comments like: the plural of a noun or the imperfect form of a verb, etc
+        Returns morphologicall informations
         ----------------------------------------------------------------------------- */
     function getDifferentForm(word, form){ // ["verb", "..."]
 
@@ -748,8 +727,8 @@
         jQuery.ajax({
             type: "GET",
             async: false,
-            url: '//amly.nbyl.me/dictation/api.php',
-            data:  {"word": word, 'form':form},
+            url: '//amly.app/dictapt.php',
+            data:  {"word": word, 'query':"POS"},
             success: function (data)
                 {
                     newform = data;
@@ -772,7 +751,7 @@
 
 
     /*
-        Clean a string from declensions & successive space, tabs
+        Clean a string from diacritics & successive space, tabs
         * حذف التشكيل والتطويل والفراغات
     */
 
@@ -797,7 +776,7 @@
     }
 
     /*
-        Extract declensions
+        Extract diacritics
         * A word can have 2 harakats like with shadda
     */
 
@@ -878,14 +857,46 @@
     }
 
     /* -----------------------------------------------------------------------------
-         logData: Log input and the processed result, this would help improving results
+         logData: Log input and the processed result,
+         * this helps analyzing & improving results
         ----------------------------------------------------------------------------- */
     function logData(input, output, similarity, wordset){
+
+		processed = '<table>'+
+			'<tr id="#"><td style="background: #eee;"><b>مقارنة الفروق: </b></td><td>'+output[0]+"</td></td>"+
+			'<tr id="#"><td style="background: #eee;"><b>بناء الكلمات وتحليل الأخطاء: </b></td><td>'+output[1]+"</td></td>"+
+			'<tr id="#"><td style="background: #eee;"><b>الصيغة المقروءة: </b></td><td>'+output[2]+"</td></td>"+
+			'<tr id="#"><td style="background: #eee;"><b>الصيغة المشكولة</b></td><td>'+output[3]+"</td></td>"+
+			//'<tr id="#"><td style="background: #eee;"><b>Lemma</b></td><td>'+revision[4]+"</td></td>"+
+			'</table>';
+
         jQuery.ajax({
             type: "POST",
             async: true,
-            url: '//amly.nbyl.me/dictation/logger.php',
-            data:  {'input': 'input', 'output':output, 'similarity': similarity, 'json':wordset },
+            url: '//amly.app/dictation/logger.php',
+            data:  {'input': 'input', 'output':processed, 'similarity': similarity, 'json':wordset },
+            //dataType: "",
+            //contentType: "application/xml; charset=utf-8",
+            success: function (data)
+                {
+                    console.log("log: "+data);
+                },
+            error: function (err)
+            { console.log(err.responseText); }
+        });
+
+    }
+    /* -----------------------------------------------------------------------------
+         logEfficiency: Logs an efficient game in solving an error
+         * This will be analayzed and fed to the recommender database
+        ----------------------------------------------------------------------------- */
+
+    function logEfficiency(level, error, gravity){
+        jQuery.ajax({
+            type: "POST",
+            async: true,
+            url: '//amly.app/dictation/logger.php',
+            data:  {'level': level, 'rule':error, 'gravity': gravity },
             //dataType: "",
             //contentType: "application/xml; charset=utf-8",
             success: function (data)
@@ -929,7 +940,7 @@
          Profilization
         ----------------------------------------------------------------------------- */
 
-    // to know example if he is صعيدي and not from cairo, localisation through a map API can be enabled to get closer
+    // to know example if he is صعيدي and not from cairo, geolocalisation through a map API can be enabled to get closer
     // localize the student
 
     function getLocation() {
