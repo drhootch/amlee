@@ -1,26 +1,44 @@
 
+    /* -----------------------------------------------------------------------------
+		Score
+		* window.app.level
+	----------------------------------------------------------------------------- */
+
+    function pushGameScore(gameid, score){
+
+        if(window.app.playedGames.length >= window.app.maxplayedGames) // if the array exceeds 100
+            window.app.playedGames.shift();
+
+        // Updating level according to the score
+        if( window.app.leveling >= 5 && averageScore(3) >= 80 ){
+			if(window.app.level < 8){
+				window.app.level += 0.5;
+				console.log("Leveling up: "+window.app.level);
+				window.app.leveling = 0;
+			}
+		}else if(window.app.leveling >= 5 && averageScore(3) <= 20){
+			if(window.app.level > 2){
+				window.app.level -= 0.5;
+				console.log("Leveling down: "+window.app.level);
+				window.app.leveling = 0;
+			}
+		}
+		window.app.leveling ++;
+        return window.app.playedGames.push([gameid, score]);
+    }
+
+    function averageScore(interval){
+        if(interval > window.app.maxplayedGames) interval = window.app.maxplayedGames;
+        var finalScore = 0;
+        for(var i=0; i<interval; i++){
+            finalScore += window.app.playedGames[i][1];
+        }
+        return (finalScore/interval).toFixed(2);
+    }
 
     /* -----------------------------------------------------------------------------
 		Onload
 	----------------------------------------------------------------------------- */
-
-    var playedGames = []; // make it persistant
-    var maxPlayedGames = 100; // includ 100 game
-
-    function pushGame(gameid, score){
-        if(playedGames.length >= maxPlayedGames)
-            playedGames.shift();
-        return playedGames.push([gameid, score]);
-    }    // in correct() if score
-
-    function averageScore(interval){
-        if(interval > maxPlayedGames) interval = maxPlayedGames;
-        var finalScore = 0;
-        for(var i=0; i<interval; i++){
-            finalScore += playedGames[i][1];
-        }
-        return (finalScore/interval).toFixed(2);
-    }
 
 
 	let remarksArray = [];
@@ -33,14 +51,15 @@
 
     /* -----------------------------------------------------------------------------
          Cookies: To provide the server with any necessary informations
+         * params & track shall remain var to be called dynamically from window
         ----------------------------------------------------------------------------- */
 
-    let params = {}; // persistant information accessible by the server through cookies
-    let track = {"words":[], "rules": []}; // track identified Errors
+    var params = {}; // persistant information accessible by the server through cookies
+    var track = {"words":[], "rules": []}; // track identified Errors
 
     function chargeProfile(){
 
-        if(checkStorage('params')){
+        if(checkStorage('params') && checkStorage('track')){
             params = getStorage('params');
             track = getStorage('track');
         }else{
@@ -70,7 +89,7 @@
     }
 
     function checkStorage(variable){ // returns true if it exists
-        return (Cookies.get('params') !== undefined);
+        return 	(typeof Cookies.get(variable) !== "undefined");
     }
 
     function updateStorage(variable){
@@ -90,7 +109,7 @@
 
     function normalizeTime(text) {
 
-        return text.replace('الساعة','').replace('ربع','خمس عشرة دقيقة').replace('نصف', 'ثلاثون دقيقة').replace('دقيقة', '').replace('دقائق', '');
+        return text.replace('الساعة ','').replace('ربع','خمس عشرة دقيقة').replace('نصف', 'ثلاثون دقيقة').replace(' دقيقة', '').replace(' دقائق', '');
 
     }
 
@@ -109,11 +128,6 @@
         dinput = filterInput(dinput);
         model_declension = filterInput(validText); 	//with diacritics
 
-        if(gametype == "time") {
-            dinput = normalizeTime(dinput);
-            validText = normalizeTime(validText);
-        }
-
         if(true || params['ignoreDiacritics']){ // clean diacritics
             validText = cleanText(validText);
             dinput = cleanText(dinput);
@@ -123,6 +137,12 @@
             dinput = cleanPunctuation(dinput);
             validText = cleanPunctuation(validText);
             model_declension = cleanPunctuation(model_declension);
+        }
+
+
+        if(gametype == "time") {
+            dinput = normalizeTime(dinput);
+            validText = normalizeTime(validText);
         }
 
         //analyzeText extraction
@@ -144,9 +164,14 @@
 
         var output = printDiffs(diffs, wordset);
 
-        logData(dinput, output, getScore(validText, dinput), wordset);
+        var score = getScore(validText, dinput);
 
-        console.log("track");
+        pushGameScore(window.app.game.current.gameid, score);
+        logData(dinput, output, score, wordset);
+
+        logEfficiency(window.app.level, "XX", 0.2, window.app.game.current.gameid);
+
+        console.log("* track errors:");
         console.log(getStorage("track"));
 
         return output;
@@ -489,7 +514,7 @@
             });
             // waw example
             $.each(ruleset['separated'], function(irule, rule) {
-                if( (word[0][0] == 0 && word[0][0] == 0)
+                if( (word[0][0] == 0 && (1 in word) && word[1][0] == 0)
                     && word[0][1].match(rule[0])){
                         pushRemark(word, rule[1]);
                         $("#remarks-other").append(rule[2]+"<br/>");
@@ -891,12 +916,12 @@
          * This will be analayzed and fed to the recommender database
         ----------------------------------------------------------------------------- */
 
-    function logEfficiency(level, error, gravity){
+    function logEfficiency(level, error, gravity, gameid){
         jQuery.ajax({
             type: "POST",
             async: true,
             url: '//amly.app/dictation/logger.php',
-            data:  {'level': level, 'rule':error, 'gravity': gravity },
+            data:  {'level': level, 'rule':error, 'gravity': gravity, gameid: 'gameid' },
             //dataType: "",
             //contentType: "application/xml; charset=utf-8",
             success: function (data)
