@@ -24,17 +24,78 @@ function initAudioElement(audioUrl) {
         audioElement.load(audioUrl)
     }
     audioElement.on('seek', function () {
-        if(!audioElement.played){
+        if (!audioElement.played) {
             audioElement.play(0);
-            audioElement.played=true;
+            audioElement.played = true;
         }
     })
+}
+var langDirection = {
+    en: 'ltr',
+    ar: 'rtl',
+}
+var languages = {
+    ar: {
+        amly: 'أملِ',
+        appTitle: 'أملِ - المدرّب الإملائي',
+        close: 'غلق',
+        remove: 'حذف',
+        clear: 'مسح',
+        submit: 'إدخال',
+        settings_lang: 'لغة الواجهة',
+        settings_level: 'المستوى',
+        settings_level_auto: 'مستوى آلي',
+        next_game: 'اللعبة القادمة',
+        your_answer: 'إجابتك',
+        the_answer: 'الإجابة',
+        show_details: 'إظهار التفاصيل',
+        details: 'تفاصيل',
+        continue: 'واصل',
+        scoreTexts: [
+            "لم تُوفّق!",
+            "يمكنك تقديم أفضل!",
+            "محاولة مقبولة!",
+            "جيد!",
+            "جيد جداً!",
+            "ممتاز!"
+        ],
+    },
+    en: {
+        amly: 'Amly',
+        appTitle: 'Amly',
+        close: 'Close',
+        clear: 'Clear',
+        remove: 'Remove',
+        submit: 'Submit',
+        settings_lang: 'Interface language',
+        settings_level: 'Level',
+        settings_level_auto: 'Automatic level',
+        next_game: 'Next game',
+        your_answer: 'Your answer',
+        the_answer: 'The answer',
+        show_details: 'Show details',
+        details: 'Details',
+        continue: 'Continue',
+        scoreTexts: [
+            "It was not enough!",
+            "You can do better!",
+            "Acceptable!",
+            "Good!",
+            "Very good!",
+            "Excellent!"
+        ],
+    }
 }
 document.addEventListener('alpine:init', () => {
     Alpine.data('game', function () {
         return {
             async init() {
                 window.app = this;
+
+                Alpine.nextTick(() => window.app.updateInterface())
+                this.$watch('lang', value => {
+                    window.app.updateInterface()
+                })
 
                 if (window.app.game.current === null || (window.app.game.current.type !== 'text_write' && !window.app.game.choices.length)) {
                     Alpine.nextTick(() => window.app.game.nextGame(false))
@@ -49,13 +110,16 @@ document.addEventListener('alpine:init', () => {
                     }
                 }
             },
+            lang: this.$persist('ar'),
+            get i18n() {
+                return languages[window.app.lang]
+            },
             lock: true,
             showModalAbout: false,
             showModalSettings: false,
             showModalResult: this.$persist(false),
             waitingAnimation: false,
             settings: {
-                uiLanguage: this.$persist('arabic'),
                 level: this.$persist(1),
                 category: this.$persist('all'),
             },
@@ -165,10 +229,10 @@ document.addEventListener('alpine:init', () => {
             },
             //Tools
             readWord(word) {
-                if(audioElement.isReady) {
+                if (audioElement.isReady) {
                     audioElement.playPause();
                 }
-                else if(responsiveVoice) {
+                else if (responsiveVoice) {
                     responsiveVoice.speak(word, "Arabic Male");
                 }
             },
@@ -182,9 +246,10 @@ document.addEventListener('alpine:init', () => {
             remarks: [],
             score: 0,
             level: this.$persist(2),
+            leveling: this.$persist(0),
             playedGames: this.$persist([]),
             maxPlayedGames: this.$persist(100),
-            showResultDetails:false,
+            showResultDetails: false,
             getScore() {
                 document.getElementById("result-modal").scrollIntoView(true);
                 window.app.showResultDetails = false;
@@ -193,7 +258,6 @@ document.addEventListener('alpine:init', () => {
                 window.app.score = getScore(window.app.game.current?.answer, window.app.game.userInput, window.app.game.gameclass);
                 window.app.remarks = remarksArray;
             },
-            scoreTexts: ["لم تُوفّق!", "يمكنك تقديم أفضل!", "محاولة مقبولة!", "جيد!", "جيد جداً!", "ممتاز!"],
             //Tools
             //API
             fetchGame(gameid) {
@@ -202,7 +266,8 @@ document.addEventListener('alpine:init', () => {
                         var url = new URL("https://amly.nbyl.me/server.php");
                         url.searchParams.append("getGame", true);
                         url.searchParams.append("level", window.app.level);
-                        if(!isNaN(gameid)){
+                        url.searchParams.append("lang", window.app.lang);
+                        if (!isNaN(gameid)) {
                             url.searchParams.append("gameid", gameid);
                         }
                         let data = await fetch(url);
@@ -303,7 +368,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }, "-=600")
 
-                    if (window.app.score<100) {
+                    if (window.app.score < 100) {
                         tl.add({
                             targets: '#answer',
                             opacity: [0, 1],
@@ -436,6 +501,35 @@ document.addEventListener('alpine:init', () => {
                     tl.finished.then(resolve);
                 })
             },
+            updateInterface() {
+                document.querySelector('html').setAttribute('dir', langDirection[window.app.lang])
+                document.querySelector('title').innerHTML = window.app.i18n.appTitle
+                var changes = [
+                    {
+                        from: langDirection[window.app.lang] === "ltr" ? "text-right" : "text-left",
+                        to: langDirection[window.app.lang] === "ltr" ? "text-left" : "text-right",
+                    },
+                    {
+                        from: langDirection[window.app.lang] === "ltr" ? "lg:text-right" : "lg:text-left",
+                        to: langDirection[window.app.lang] === "ltr" ? "lg:text-left" : "lg:text-right",
+                    },
+                    {
+                        from: langDirection[window.app.lang] === "ltr" ? "space-x-reverse" : "space-x",
+                        to: langDirection[window.app.lang] === "ltr" ? "space-x" : "space-x-reverse",
+                    },
+                    {
+                        from: langDirection[window.app.lang] === "ltr" ? "lg:space-x-reverse" : "lg:space-x",
+                        to: langDirection[window.app.lang] === "ltr" ? "lg:space-x" : "lg:space-x-reverse",
+                    },
+                ]
+                changes.forEach((change, index) => {
+                    const elems = Array.from(document.getElementsByClassName(change.from));
+                    elems.forEach((elem, index) => {
+                        elem.classList.remove(change.from);
+                        elem.classList.add(change.to);
+                    });
+                });
+            }
         }
     })
 })

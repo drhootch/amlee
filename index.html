@@ -39,7 +39,7 @@
                             d="M50 0C44.9433 0.347658 9.41757 3.73049 6.93415 28.087C6.63239 30.6906 6.46149 33.3058 6.34918 35.923L23.8171 18.4727C24.4275 17.8624 25.4187 17.8624 26.0291 18.4727C26.6394 19.0831 26.6394 20.0724 26.0291 20.6827L0.687018 45.9992C-0.229006 46.9143 -0.229006 48.3987 0.687018 49.3137C1.60304 50.2288 3.08841 50.2288 4.00541 49.3137L9.58457 43.7404C13.695 43.7268 17.8024 43.4934 21.8855 43.0217C27.1082 42.4904 31.3602 40.4367 34.8329 37.5002H24.9744L39.3095 32.7267C40.4081 31.2726 41.3964 29.7277 42.2831 28.1251H34.3592L44.7636 22.9288C48.8564 12.9747 49.8232 2.56447 50 0Z"
                             fill="white" />
                     </svg>
-                    <p class="block text-center text-lg lg:text-3xl text-white">أملِ</p>
+                    <p class="block text-center text-lg lg:text-3xl text-white" x-text="i18n.amly">أملِ</p>
                 </button>
                 <button @click.stop="showModalSettings=true" class="mr-4 lg:mr-8">
                     <svg class="w-5 lg:w-8" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +92,7 @@
                                             x-init="initAudioElement(game.current.audio);" class="w-full h-16"></div>
                                     </button>
                                 </div>
-                                <div class="flex flex-col space-y-6 items-center">
+                                <div class="flex flex-col space-y-6 items-center" dir="rtl">
                                     <template x-if="game.current.type==='word_building'">
                                         <div id="slots">
                                             <template x-for="i in game.current.answer.length" x-key="i">
@@ -135,7 +135,7 @@
                                                         d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z"
                                                         fill="black" />
                                                 </svg>
-                                                <p class="block text-center text-xl lg:text-3xl">حذف</p>
+                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.remove">حذف</p>
                                             </button>
                                         </template>
                                         <template x-if="game.current.type==='text_write'">
@@ -149,7 +149,7 @@
                                                         d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z"
                                                         fill="black" />
                                                 </svg>
-                                                <p class="block text-center text-xl lg:text-3xl">مسح</p>
+                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.clear">مسح</p>
                                             </button>
                                         </template>
                                         <template
@@ -163,7 +163,7 @@
                                                     <path :class="game.canSubmit ? 'fill-green-600' : 'fill-gray-200'"
                                                         d="M32.6358 8.64691C32.8365 8.44209 33.0761 8.27938 33.3405 8.1683C33.6049 8.05722 33.8888 8 34.1756 8C34.4624 8 34.7463 8.05722 35.0107 8.1683C35.2751 8.27938 35.5147 8.44209 35.7154 8.64691C36.5567 9.49697 36.5684 10.8706 35.7449 11.7354L18.3525 32.2956C18.155 32.5125 17.9154 32.6867 17.6482 32.8078C17.3811 32.9288 17.0921 32.9941 16.7988 32.9996C16.5056 33.0051 16.2143 32.9508 15.9428 32.8398C15.6714 32.7289 15.4254 32.5637 15.2199 32.3545L4.63679 21.6302C4.22863 21.2139 4 20.6542 4 20.0712C4 19.4883 4.22863 18.9286 4.63679 18.5123C4.83752 18.3075 5.07711 18.1448 5.34151 18.0337C5.60591 17.9226 5.88981 17.8654 6.1766 17.8654C6.46339 17.8654 6.74729 17.9226 7.01169 18.0337C7.27609 18.1448 7.51568 18.3075 7.71641 18.5123L16.6935 27.61L32.577 8.71162C32.5953 8.68889 32.6149 8.66728 32.6358 8.64691Z" />
                                                 </svg>
-                                                <p class="block text-center text-xl lg:text-3xl">إدخال</p>
+                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.submit">إدخال</p>
                                             </button>
                                         </template>
                                     </div>
@@ -195,7 +195,7 @@
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-12 overflow-y-auto">
                     <div class="flex flex-col space-y-10 justify-center items-center bg-white rounded-3xl">
                         <p id="resultTitle" class="block text-center text-xl lg:text-4xl text-black "
-                            x-text="scoreTexts[Math.floor((score/20))]"></p>
+                            x-text="i18n.scoreTexts[Math.floor((score/20))]"></p>
                         <div id="resultStars" class="flex flex-row space-x-5 space-x-reverse justify-start items-start">
                             <template x-for="i in 5" x-key="i">
                                 <svg :class="i*20<=score ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
@@ -210,28 +210,27 @@
                             class="flex flex-col w-full space-y-6 justify-start items-center">
                             <div x-show="game?.userInput?.trim?.().length"
                                 class="flex flex-col w-full space-y-6 justify-start items-center">
-                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">إجابتك:
+                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full" x-text="i18n.your_answer">إجابتك:
                                 </div>
-                                <div class="bg-gray-200 rounded-xl w-full border-2 border-dashed border-gray-600 p-4">
+                                <div class="bg-gray-200 rounded-xl w-full border-2 border-dashed border-gray-600 p-4" dir="rtl">
                                     <div x-text="game.userInput" class="text-2xl lg:text-3xl text-black"></div>
                                 </div>
                             </div>
-                            <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">الإجابة
-                                الصحيحة:
+                            <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full" x-text="i18n.the_answer">الإجابة الصحيحة:
                             </div>
-                            <div class="bg-green-200 rounded-xl w-full border-2 border-dashed border-green-600 p-4">
+                            <div class="bg-green-200 rounded-xl w-full border-2 border-dashed border-green-600 p-4" dir="rtl">
                                 <div x-text="game.current?.answer" class="text-2xl lg:text-3xl text-teal-700"></div>
                             </div>
                             <button x-show="!showResultDetails" @click.stop="showResultDetails=true" x-transition
                                 class="flex flex-row space-x-2 space-x-reverse justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400">
-                                <p class="block text-center text-xl lg:text-4xl text-white">إظهار التفاصيل</p>
+                                <p class="block text-center text-xl lg:text-4xl text-white" x-text="i18n.show_details">إظهار التفاصيل</p>
                             </button>
                             <div x-show="showResultDetails" x-transition
                                 class="flex flex-col w-full space-y-6 justify-start items-center">
-                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full">تفاصيل:
+                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full" x-text="i18n.details">تفاصيل:
                                 </div>
                                 <template x-for="remark in remarks" x-key="remark">
-                                    <div x-show="remark[0][0] && remark[0]?.[1] || remark[0][0] && !remark[0]?.[1] && !remark?.[1] || remark[0][0] && !remark[0]?.[1] && remark?.[1]"
+                                    <div x-show="remark[0][0] && remark[0]?.[1] || remark[0][0] && !remark[0]?.[1] && !remark?.[1] || remark[0][0] && !remark[0]?.[1] && remark?.[1]" dir="rtl"
                                         class="bg-gray-100 rounded-xl w-full border-2 border-dashed border-gray-400 p-4">
                                         <div x-show="remark[0][0] && remark[0]?.[1]"
                                             class="text-2xl lg:text-3xl text-teal-700">
@@ -254,7 +253,7 @@
                         <div id="resultButtons">
                             <button @click.stop="game.nextGame"
                                 class="flex flex-row space-x-2 space-x-reverse justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                                <p class="block text-center text-xl lg:text-4xl text-white">واصل</p>
+                                <p class="block text-center text-xl lg:text-4xl text-white" x-text="i18n.continue">واصل</p>
                                 <svg width="20" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path class="fill-white"
                                         d="M38 0C38.4899 6.46217e-05 38.9627 0.179913 39.3287 0.505435C39.6948 0.830956 39.9287 1.27951 39.986 1.76602L40 2.00002V15.0001C40.0001 16.7903 39.3144 18.5125 38.0839 19.8126C36.8533 21.1127 35.1714 21.892 33.384 21.9902L33 22.0002H6.83L13.414 28.5862C13.7584 28.9306 13.9652 29.3888 13.9958 29.8749C14.0263 30.361 13.8785 30.8415 13.58 31.2263L13.414 31.4143C13.0696 31.7586 12.6114 31.9655 12.1254 31.9961C11.6393 32.0266 11.1588 31.8788 10.774 31.5803L10.586 31.4143L0.586 21.4142C0.515942 21.3444 0.451101 21.2695 0.392 21.1902L0.25 20.9702L0.142 20.7422L0.072 20.5322L0.0219998 20.2982L0.0079999 20.1782L0 20.0002L0.00600004 19.8502L0.04 19.5982L0.0999999 19.3762L0.188 19.1542L0.292 18.9582L0.42 18.7742L0.586 18.5862L10.586 8.58608C10.9459 8.22738 11.4289 8.01912 11.9368 8.00361C12.4447 7.9881 12.9394 8.1665 13.3206 8.50257C13.7017 8.83864 13.9406 9.30718 13.9888 9.81303C14.037 10.3189 13.8908 10.8241 13.58 11.2261L13.414 11.4141L6.83 18.0002H33C33.7455 18.0002 34.4642 17.7226 35.0162 17.2217C35.5682 16.7207 35.9139 16.0321 35.986 15.2901L36 15.0001V2.00002C36 1.46958 36.2107 0.960868 36.5858 0.585792C36.9609 0.210716 37.4696 0 38 0V0Z" />
@@ -279,23 +278,26 @@
                 <div @click.stop x-trap.noscroll.inert="showModalSettings"
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-4 overflow-y-auto">
                     <div class="px-4 py-3 text-right sm:px-6" x-id="['settings']">
-                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700">
+                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700" x-text="i18n.settings_lang">
                             لغة الواجهة
                         </label>
-                        <select x-model="settings.uiLanguage" :id="$id('settings')"
+                        <select x-model="lang" :id="$id('settings')"
                             class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full h-8 shadow-sm text-md border-gray-300 rounded-md">
                             <option selected value="ar">
                                 اللغة العربية
                             </option>
+                            <option selected value="en">
+                                English
+                            </option>
                         </select>
                     </div>
                     <div class="px-4 py-3 text-right sm:px-6" x-id="['settings']">
-                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700">
+                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700" x-text="i18n.settings_level">
                             المستوى
                         </label>
                         <select x-model="settings.level" :id="$id('settings')"
                             class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full h-8 shadow-sm text-md border-gray-300 rounded-md">
-                            <option value="1">
+                            <option value="1" x-text="i18n.settings_level_auto">
                                 مستوى آلي
                             </option>
                         </select>
@@ -329,11 +331,11 @@
                                     d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z"
                                     fill="black" />
                             </svg>
-                            <span>اغلاق</span>
+                            <span x-text="i18n.close">اغلاق</span>
                         </button>
                         <button @click.stop="game.nextGame(); showModalSettings=false"
                             class="space-x-2 space-x-reverse items-center inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                            <span>الكلمة القادمة</span>
+                            <span x-text="i18n.next_game">اللعبة القادمة</span>
                             <svg width="20" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path class="fill-white"
                                     d="M38 0C38.4899 6.46217e-05 38.9627 0.179913 39.3287 0.505435C39.6948 0.830956 39.9287 1.27951 39.986 1.76602L40 2.00002V15.0001C40.0001 16.7903 39.3144 18.5125 38.0839 19.8126C36.8533 21.1127 35.1714 21.892 33.384 21.9902L33 22.0002H6.83L13.414 28.5862C13.7584 28.9306 13.9652 29.3888 13.9958 29.8749C14.0263 30.361 13.8785 30.8415 13.58 31.2263L13.414 31.4143C13.0696 31.7586 12.6114 31.9655 12.1254 31.9961C11.6393 32.0266 11.1588 31.8788 10.774 31.5803L10.586 31.4143L0.586 21.4142C0.515942 21.3444 0.451101 21.2695 0.392 21.1902L0.25 20.9702L0.142 20.7422L0.072 20.5322L0.0219998 20.2982L0.0079999 20.1782L0 20.0002L0.00600004 19.8502L0.04 19.5982L0.0999999 19.3762L0.188 19.1542L0.292 18.9582L0.42 18.7742L0.586 18.5862L10.586 8.58608C10.9459 8.22738 11.4289 8.01912 11.9368 8.00361C12.4447 7.9881 12.9394 8.1665 13.3206 8.50257C13.7017 8.83864 13.9406 9.30718 13.9888 9.81303C14.037 10.3189 13.8908 10.8241 13.58 11.2261L13.414 11.4141L6.83 18.0002H33C33.7455 18.0002 34.4642 17.7226 35.0162 17.2217C35.5682 16.7207 35.9139 16.0321 35.986 15.2901L36 15.0001V2.00002C36 1.46958 36.2107 0.960868 36.5858 0.585792C36.9609 0.210716 37.4696 0 38 0V0Z" />
@@ -362,7 +364,7 @@
                                     d="M50 0C44.9433 0.347658 9.41757 3.73049 6.93415 28.087C6.63239 30.6906 6.46149 33.3058 6.34918 35.923L23.8171 18.4727C24.4275 17.8624 25.4187 17.8624 26.0291 18.4727C26.6394 19.0831 26.6394 20.0724 26.0291 20.6827L0.687018 45.9992C-0.229006 46.9143 -0.229006 48.3987 0.687018 49.3137C1.60304 50.2288 3.08841 50.2288 4.00541 49.3137L9.58457 43.7404C13.695 43.7268 17.8024 43.4934 21.8855 43.0217C27.1082 42.4904 31.3602 40.4367 34.8329 37.5002H24.9744L39.3095 32.7267C40.4081 31.2726 41.3964 29.7277 42.2831 28.1251H34.3592L44.7636 22.9288C48.8564 12.9747 49.8232 2.56447 50 0Z"
                                     class="fill-teal-600" />
                             </svg>
-                            <p class="block text-center text-lg lg:text-3xl text-teal-600">أملِ</p>
+                            <p class="block text-center text-lg lg:text-3xl text-teal-600" x-text="i18n.amly">أملِ</p>
                         </div>
                         <p class="text-lg lg:text-2xl">
                             هذا نموذج أولي من منصة <b>أملِ</b> Amly.app للتدريب الإملائي.
@@ -398,7 +400,7 @@
                                     d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z"
                                     fill="black" />
                             </svg>
-                            <spa>
+                            <spa x-text="i18n.close">
                                 اغلاق
                             </spa>
                         </button>
