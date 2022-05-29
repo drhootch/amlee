@@ -165,7 +165,12 @@ document.addEventListener('alpine:init', () => {
             },
             //Tools
             readWord(word) {
-                audioElement.playPause();
+                if(audioElement.isReady) {
+                    audioElement.playPause();
+                }
+                else if(responsiveVoice) {
+                    responsiveVoice.speak(word, "Arabic Male");
+                }
             },
             //Static
             letters: [
@@ -176,6 +181,9 @@ document.addEventListener('alpine:init', () => {
             ],
             remarks: [],
             score: 0,
+            level: this.$persist(2),
+            playedGames: this.$persist([]),
+            maxPlayedGames: this.$persist(100),
             showResultDetails:false,
             getScore() {
                 document.getElementById("result-modal").scrollIntoView(true);
@@ -191,24 +199,15 @@ document.addEventListener('alpine:init', () => {
             fetchGame(gameid) {
                 return new Promise(async (resolve, reject) => {
                     try {
-                        let extra = ""
+                        var url = new URL("https://amly.nbyl.me/server.php");
+                        url.searchParams.append("getGame", true);
+                        url.searchParams.append("level", window.app.level);
                         if(!isNaN(gameid)){
-                            extra += "&gameid="+gameid;
+                            url.searchParams.append("gameid", gameid);
                         }
-                        let data = await fetch("https://amly.nbyl.me/server.php?type=word"+extra);
+                        let data = await fetch(url);
                         data = await data.json()
-                        resolve({
-                            type: data.type,
-                            q: data.q,
-                            q2: data.q2,
-                            choices: data.choices,
-                            answer: data.answer,
-                            image: data.img,
-                            imageTag: data.imgTag,
-                            audio: data.audio,
-                            attempts: data.attempts > 0 ? data.attempts : 1,
-                            gameclass: data.gameclass,
-                        });
+                        resolve(data);
                     }
                     catch (error) {
                         reject(error);
