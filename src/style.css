@@ -4,19 +4,19 @@
 
 @layer base {
     @font-face {
-      font-family: "Tajawal";
+      font-family: "Almarai";
       font-weight: 400;
-      src: url("../fonts/Tajawal-Regular.ttf");
+      src: url("../fonts/Almarai-Regular.ttf");
     }
     @font-face {
-      font-family: "Tajawal";
+      font-family: "Almarai";
       font-weight: 500;
-      src: url("../fonts/Tajawal-Medium.ttf");
+      src: url("../fonts/Almarai-Medium.ttf");
     }
     @font-face {
-      font-family: "Tajawal";
+      font-family: "Almarai";
       font-weight: 700;
-      src: url("../fonts/Tajawal-Bold.ttf");
+      src: url("../fonts/Almarai-Bold.ttf");
     }
   }
 

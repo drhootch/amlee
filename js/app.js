@@ -46,10 +46,10 @@ var languages = {
         settings_level: 'المستوى',
         settings_level_auto: 'مستوى آلي',
         next_game: 'اللعبة القادمة',
-        your_answer: 'إجابتك',
-        the_answer: 'الإجابة',
-        show_details: 'إظهار التفاصيل',
-        details: 'تفاصيل',
+        your_answer: 'إجابتك:',
+        the_answer: 'الإجابة الصحيحة:',
+        show_details: 'إظهار المزيد',
+        details: 'تفاصيل:',
         continue: 'واصل',
         scoreTexts: [
             "لم تُوفّق!",
@@ -72,8 +72,8 @@ var languages = {
         settings_level_auto: 'Automatic level',
         next_game: 'Next game',
         your_answer: 'Your answer',
-        the_answer: 'The answer',
-        show_details: 'Show details',
+        the_answer: 'The correct answer',
+        show_details: 'Show more',
         details: 'Details',
         continue: 'Continue',
         scoreTexts: [
@@ -129,6 +129,7 @@ document.addEventListener('alpine:init', () => {
                 userInput: this.$persist(''),
                 image: this.$persist(null),
                 imageIsLoading: true,
+                correct: [],
                 choices: this.$persist([]),
                 current: this.$persist(null),
                 triesRemaining: this.$persist(1),
@@ -252,12 +253,29 @@ document.addEventListener('alpine:init', () => {
             maxPlayedGames: this.$persist(100),
             showResultDetails: false,
             getScore() {
-                document.getElementById("result-modal").scrollIntoView(true);
                 window.app.showResultDetails = false;
                 remarksArray = [];
-                correct(window.app.game.userInput, window.app.game.current?.answer, window.app.game.current?.gameclass);
+                window.app.game.correct = correct(window.app.game.userInput, window.app.game.current?.answer, window.app.game.current?.gameclass);
                 window.app.score = getScore(window.app.game.current?.answer, window.app.game.userInput, window.app.game.gameclass);
                 window.app.remarks = remarksArray;
+                Alpine.nextTick(() => {
+                    const elemsSpan = Array.from(document.querySelectorAll("#answser_detail>span"));
+                    elemsSpan.forEach((elem, index) => {
+                        elem.style.background= "unset";
+                    });
+                    const elems = Array.from(document.getElementsByClassName("tooltip"));
+                    elems.forEach((elem, index) => {
+                        elem.removeAttribute("style");
+                        elem.classList.add("bg-gray-100", "rounded-md", "cursor-pointer", "p-1", "m-1", "shadow-[0px_0px_4px_rgba(138,138,138,1)]", "text-red-600");
+                    });
+                    const tltp = new jBox('Tooltip', {
+                        attach: '.tooltip',
+                        addClass: 'text-xl'
+                    });
+                    setTimeout(() => {
+                        document.getElementById("result-modal").scrollTop = 0;
+                    }, 100);
+                })
             },
             //Tools
             //API

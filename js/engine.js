@@ -89,15 +89,15 @@
     }
 
     function checkStorage(variable){ // returns true if it exists
-        return 	(typeof Cookies.get(variable) !== "undefined");
+        return 	(typeof Cookies?.get(variable) !== "undefined");
     }
 
     function updateStorage(variable){
-        Cookies.set(variable, JSON.stringify(window[variable]), { sameSite: 'strict' });
+        Cookies?.set(variable, JSON.stringify(window[variable]), { sameSite: 'strict' });
     }
 
     function getStorage(variable){
-        return checkStorage(variable)?JSON.parse(Cookies.get(variable)):{};
+        return checkStorage(variable)?JSON.parse(Cookies?.get(variable)):{};
     }
 
 

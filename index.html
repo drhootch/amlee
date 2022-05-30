@@ -11,11 +11,14 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/main.css?v=1">
+    <link rel="stylesheet" href="css/app.css?v=1">
+    <link href="https://cdn.jsdelivr.net/gh/StephanWagner/jBox@v1.3.3/dist/jBox.all.min.css" rel="stylesheet">
+
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/@alpinejs/collapse@3.10.2/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
@@ -24,16 +27,17 @@
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
     <script src="js/diff_match_patch.js"></script>
     <script src="js/ruleset.js"></script>
-    <script src="js/engine.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/engine.js?v=1"></script>
+    <script src="js/app.js?v=1"></script>
 </head>
 
-<body class="bg-teal-400 font-tajawal h-screen">
-    <div x-data="game" class="w-full h-full" x-cloak @keyup.window="keypressed($event)">
+<body class="bg-teal-400 font-almarai h-screen">
+    <div class="hidden bg-gray-100 rounded-md cursor-pointer p-1 m-1 shadow-[0px_0px_4px_rgba(138,138,138,1)] text-red-600"></div>
+    <div x-data="game" class="w-full h-full " x-cloak @keyup.window="keypressed($event)">
         <div class="w-full h-full flex flex-col items-center p-4 space-y-8">
-            <div class="w-full flex justify-between">
+            <div class="w-full flex justify-between mx-4 lg:mx-8">
                 <button @click.stop="showModalAbout=true"
-                    class="flex space-x-2 lg:space-x-4 space-x-reverse lg:space-x-reverse ml-4 lg:ml-8">
+                    class="flex space-x-2 lg:space-x-4 space-x-reverse lg:space-x-reverse">
                     <svg class="w-5 lg:w-8" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M50 0C44.9433 0.347658 9.41757 3.73049 6.93415 28.087C6.63239 30.6906 6.46149 33.3058 6.34918 35.923L23.8171 18.4727C24.4275 17.8624 25.4187 17.8624 26.0291 18.4727C26.6394 19.0831 26.6394 20.0724 26.0291 20.6827L0.687018 45.9992C-0.229006 46.9143 -0.229006 48.3987 0.687018 49.3137C1.60304 50.2288 3.08841 50.2288 4.00541 49.3137L9.58457 43.7404C13.695 43.7268 17.8024 43.4934 21.8855 43.0217C27.1082 42.4904 31.3602 40.4367 34.8329 37.5002H24.9744L39.3095 32.7267C40.4081 31.2726 41.3964 29.7277 42.2831 28.1251H34.3592L44.7636 22.9288C48.8564 12.9747 49.8232 2.56447 50 0Z"
@@ -41,13 +45,21 @@
                     </svg>
                     <p class="block text-center text-lg lg:text-3xl text-white" x-text="i18n.amly">أملِ</p>
                 </button>
-                <button @click.stop="showModalSettings=true" class="mr-4 lg:mr-8">
-                    <svg class="w-5 lg:w-8" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M29.3906 3.28125C28.1 -1.09375 21.9 -1.09375 20.6094 3.28125L20.2969 4.34375C20.104 4.99873 19.767 5.60225 19.3106 6.11004C18.8542 6.61783 18.2898 7.01702 17.659 7.27832C17.0282 7.53963 16.347 7.65644 15.6651 7.62018C14.9833 7.58391 14.3183 7.3955 13.7187 7.06875L12.75 6.5375C8.74062 4.35625 4.35625 8.74063 6.54062 12.7469L7.06875 13.7187C8.4625 16.2812 7.14062 19.4719 4.34375 20.2969L3.28125 20.6094C-1.09375 21.9 -1.09375 28.1 3.28125 29.3906L4.34375 29.7031C4.99873 29.896 5.60225 30.233 6.11004 30.6894C6.61783 31.1458 7.01702 31.7102 7.27832 32.341C7.53963 32.9718 7.65644 33.653 7.62018 34.3349C7.58391 35.0167 7.3955 35.6817 7.06875 36.2812L6.5375 37.25C4.35625 41.2594 8.74063 45.6437 12.7469 43.4594L13.7187 42.9312C14.3183 42.6045 14.9833 42.4161 15.6651 42.3798C16.347 42.3436 17.0282 42.4604 17.659 42.7217C18.2898 42.983 18.8542 43.3822 19.3106 43.89C19.767 44.3978 20.104 45.0013 20.2969 45.6562L20.6094 46.7187C21.9 51.0937 28.1 51.0937 29.3906 46.7187L29.7031 45.6562C29.896 45.0013 30.233 44.3978 30.6894 43.89C31.1458 43.3822 31.7102 42.983 32.341 42.7217C32.9718 42.4604 33.653 42.3436 34.3349 42.3798C35.0167 42.4161 35.6817 42.6045 36.2812 42.9312L37.25 43.4625C41.2594 45.6438 45.6437 41.2594 43.4594 37.2531L42.9312 36.2812C42.6045 35.6817 42.4161 35.0167 42.3798 34.3349C42.3436 33.653 42.4604 32.9718 42.7217 32.341C42.983 31.7102 43.3822 31.1458 43.89 30.6894C44.3978 30.233 45.0013 29.896 45.6562 29.7031L46.7187 29.3906C51.0937 28.1 51.0937 21.9 46.7187 20.6094L45.6562 20.2969C45.0013 20.104 44.3978 19.767 43.89 19.3106C43.3822 18.8542 42.983 18.2898 42.7217 17.659C42.4604 17.0282 42.3436 16.347 42.3798 15.6651C42.4161 14.9833 42.6045 14.3183 42.9312 13.7187L43.4625 12.75C45.6438 8.74062 41.2594 4.35625 37.2531 6.54062L36.2812 7.06875C35.6817 7.3955 35.0167 7.58391 34.3349 7.62018C33.653 7.65644 32.9718 7.53963 32.341 7.27832C31.7102 7.01702 31.1458 6.61783 30.6894 6.11004C30.233 5.60225 29.896 4.99873 29.7031 4.34375L29.3906 3.28125V3.28125ZM25 34.1563C22.5716 34.1563 20.2427 33.1916 18.5256 31.4744C16.8084 29.7573 15.8438 27.4284 15.8438 25C15.8438 22.5716 16.8084 20.2427 18.5256 18.5256C20.2427 16.8084 22.5716 15.8438 25 15.8438C27.4276 15.8438 29.7557 16.8081 31.4722 18.5246C33.1888 20.2412 34.1531 22.5693 34.1531 24.9969C34.1531 27.4244 33.1888 29.7526 31.4722 31.4691C29.7557 33.1857 27.4276 34.15 25 34.15V34.1563Z"
-                            fill="white" />
-                    </svg>
-                </button>
+                <div class="flex space-x-4">
+                    <button x-show="lang==='en'" @click.stop="lang='ar'" class="block text-center text-md lg:text-2xl text-teal-500 bg-white rounded-lg px-2">
+                        عَرَبي
+                    </button>
+                    <button x-show="lang==='ar'" @click.stop="lang='en'" class="block text-center text-md lg:text-2xl text-teal-500 bg-white rounded-lg px-2">
+                        En
+                    </button>
+                    <button @click.stop="showModalSettings=true">
+                        <svg class="w-5 lg:w-8" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M29.3906 3.28125C28.1 -1.09375 21.9 -1.09375 20.6094 3.28125L20.2969 4.34375C20.104 4.99873 19.767 5.60225 19.3106 6.11004C18.8542 6.61783 18.2898 7.01702 17.659 7.27832C17.0282 7.53963 16.347 7.65644 15.6651 7.62018C14.9833 7.58391 14.3183 7.3955 13.7187 7.06875L12.75 6.5375C8.74062 4.35625 4.35625 8.74063 6.54062 12.7469L7.06875 13.7187C8.4625 16.2812 7.14062 19.4719 4.34375 20.2969L3.28125 20.6094C-1.09375 21.9 -1.09375 28.1 3.28125 29.3906L4.34375 29.7031C4.99873 29.896 5.60225 30.233 6.11004 30.6894C6.61783 31.1458 7.01702 31.7102 7.27832 32.341C7.53963 32.9718 7.65644 33.653 7.62018 34.3349C7.58391 35.0167 7.3955 35.6817 7.06875 36.2812L6.5375 37.25C4.35625 41.2594 8.74063 45.6437 12.7469 43.4594L13.7187 42.9312C14.3183 42.6045 14.9833 42.4161 15.6651 42.3798C16.347 42.3436 17.0282 42.4604 17.659 42.7217C18.2898 42.983 18.8542 43.3822 19.3106 43.89C19.767 44.3978 20.104 45.0013 20.2969 45.6562L20.6094 46.7187C21.9 51.0937 28.1 51.0937 29.3906 46.7187L29.7031 45.6562C29.896 45.0013 30.233 44.3978 30.6894 43.89C31.1458 43.3822 31.7102 42.983 32.341 42.7217C32.9718 42.4604 33.653 42.3436 34.3349 42.3798C35.0167 42.4161 35.6817 42.6045 36.2812 42.9312L37.25 43.4625C41.2594 45.6438 45.6437 41.2594 43.4594 37.2531L42.9312 36.2812C42.6045 35.6817 42.4161 35.0167 42.3798 34.3349C42.3436 33.653 42.4604 32.9718 42.7217 32.341C42.983 31.7102 43.3822 31.1458 43.89 30.6894C44.3978 30.233 45.0013 29.896 45.6562 29.7031L46.7187 29.3906C51.0937 28.1 51.0937 21.9 46.7187 20.6094L45.6562 20.2969C45.0013 20.104 44.3978 19.767 43.89 19.3106C43.3822 18.8542 42.983 18.2898 42.7217 17.659C42.4604 17.0282 42.3436 16.347 42.3798 15.6651C42.4161 14.9833 42.6045 14.3183 42.9312 13.7187L43.4625 12.75C45.6438 8.74062 41.2594 4.35625 37.2531 6.54062L36.2812 7.06875C35.6817 7.3955 35.0167 7.58391 34.3349 7.62018C33.653 7.65644 32.9718 7.53963 32.341 7.27832C31.7102 7.01702 31.1458 6.61783 30.6894 6.11004C30.233 5.60225 29.896 4.99873 29.7031 4.34375L29.3906 3.28125V3.28125ZM25 34.1563C22.5716 34.1563 20.2427 33.1916 18.5256 31.4744C16.8084 29.7573 15.8438 27.4284 15.8438 25C15.8438 22.5716 16.8084 20.2427 18.5256 18.5256C20.2427 16.8084 22.5716 15.8438 25 15.8438C27.4276 15.8438 29.7557 16.8081 31.4722 18.5246C33.1888 20.2412 34.1531 22.5693 34.1531 24.9969C34.1531 27.4244 33.1888 29.7526 31.4722 31.4691C29.7557 33.1857 27.4276 34.15 25 34.15V34.1563Z"
+                                fill="white" />
+                        </svg>
+                    </button>
+                </div>
             </div>
             <template x-if="game.current">
                 <div x-show="!waitingAnimation" id="gameBoard"
@@ -77,9 +89,9 @@
                             class="w-full flex flex-col-reverse lg:flex-row space-y-4 space-y-reverse lg:space-x-12 lg:space-x-reverse flex-1 lg:flex-initial">
                             <div class="flex-1 flex flex-col space-y-6 justify-center"
                                 :class="isSafari && game.image!==null && game.image.length ? 'mt-[-240px] lg:mt-0' : ''">
-                                <div id="question" class="w-full"
+                                <div id="question" class="w-full" dir="ltr"
                                     x-show="game.current.audio || game.current.q2 || game.current.tts">
-                                    <button dir="ltr" @click.stop="readWord(game.current.tts)"
+                                    <button @click.stop="readWord(game.current.tts)"
                                         class="flex flex-row space-x-2 space-x-reverse w-full h-16 px-4 bg-teal-200 rounded-full border-dashed border-4 border-teal-600 text-3xl items-center">
                                         <svg x-show="game.current.audio || game.current.tts"
                                             class="fill-teal-600 m-auto w-5 h-5 lg:w-7 lg:h-7" viewBox="0 0 45 45"
@@ -135,7 +147,8 @@
                                                         d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z"
                                                         fill="black" />
                                                 </svg>
-                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.remove">حذف</p>
+                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.remove">
+                                                    حذف</p>
                                             </button>
                                         </template>
                                         <template x-if="game.current.type==='text_write'">
@@ -149,7 +162,8 @@
                                                         d="M22.4347 20.4964L31.3843 11.5676C31.7763 11.1757 31.9964 10.6441 31.9964 10.0898C31.9964 9.53558 31.7763 9.00402 31.3843 8.6121C30.9924 8.22018 30.4609 8 29.9066 8C29.3524 8 28.8208 8.22018 28.4289 8.6121L19.5 17.5618L10.5711 8.6121C10.1792 8.22018 9.64765 8 9.09339 8C8.53913 8 8.00757 8.22018 7.61565 8.6121C7.22373 9.00402 7.00355 9.53558 7.00355 10.0898C7.00355 10.6441 7.22373 11.1757 7.61565 11.5676L16.5653 20.4964L7.61565 29.4253C7.42057 29.6188 7.26573 29.849 7.16007 30.1026C7.0544 30.3563 7 30.6283 7 30.9031C7 31.1778 7.0544 31.4499 7.16007 31.7035C7.26573 31.9571 7.42057 32.1873 7.61565 32.3808C7.80914 32.5759 8.03933 32.7307 8.29296 32.8364C8.54659 32.942 8.81863 32.9964 9.09339 32.9964C9.36815 32.9964 9.64019 32.942 9.89382 32.8364C10.1474 32.7307 10.3776 32.5759 10.5711 32.3808L19.5 23.4311L28.4289 32.3808C28.6224 32.5759 28.8526 32.7307 29.1062 32.8364C29.3598 32.942 29.6319 32.9964 29.9066 32.9964C30.1814 32.9964 30.4534 32.942 30.707 32.8364C30.9607 32.7307 31.1909 32.5759 31.3843 32.3808C31.5794 32.1873 31.7343 31.9571 31.8399 31.7035C31.9456 31.4499 32 31.1778 32 30.9031C32 30.6283 31.9456 30.3563 31.8399 30.1026C31.7343 29.849 31.5794 29.6188 31.3843 29.4253L22.4347 20.4964Z"
                                                         fill="black" />
                                                 </svg>
-                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.clear">مسح</p>
+                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.clear">مسح
+                                                </p>
                                             </button>
                                         </template>
                                         <template
@@ -157,13 +171,14 @@
                                             <button @click.stop="playClickAudio();game.submit()"
                                                 @keyup.enter.window="game.submit"
                                                 :class="game.canSubmit ? 'shadow-teal-500 shadow-md bg-green-300 text-green-600 focus:ring-green-600 border-green-600 border-2' : 'bg-gray-500 text-gray-200 border-gray-500 border-2'"
-                                                class="flex flex-row space-x-2 space-x-reverse justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2">
+                                                class="flex flex-row space-x-2 space-x-reverse shadow-sm justify-center items-center px-4 lg:px-6 py-1 lg:py-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2">
                                                 <svg width="20" height="20" viewBox="0 0 40 40" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
                                                     <path :class="game.canSubmit ? 'fill-green-600' : 'fill-gray-200'"
                                                         d="M32.6358 8.64691C32.8365 8.44209 33.0761 8.27938 33.3405 8.1683C33.6049 8.05722 33.8888 8 34.1756 8C34.4624 8 34.7463 8.05722 35.0107 8.1683C35.2751 8.27938 35.5147 8.44209 35.7154 8.64691C36.5567 9.49697 36.5684 10.8706 35.7449 11.7354L18.3525 32.2956C18.155 32.5125 17.9154 32.6867 17.6482 32.8078C17.3811 32.9288 17.0921 32.9941 16.7988 32.9996C16.5056 33.0051 16.2143 32.9508 15.9428 32.8398C15.6714 32.7289 15.4254 32.5637 15.2199 32.3545L4.63679 21.6302C4.22863 21.2139 4 20.6542 4 20.0712C4 19.4883 4.22863 18.9286 4.63679 18.5123C4.83752 18.3075 5.07711 18.1448 5.34151 18.0337C5.60591 17.9226 5.88981 17.8654 6.1766 17.8654C6.46339 17.8654 6.74729 17.9226 7.01169 18.0337C7.27609 18.1448 7.51568 18.3075 7.71641 18.5123L16.6935 27.61L32.577 8.71162C32.5953 8.68889 32.6149 8.66728 32.6358 8.64691Z" />
                                                 </svg>
-                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.submit">إدخال</p>
+                                                <p class="block text-center text-xl lg:text-3xl" x-text="i18n.submit">
+                                                    إدخال</p>
                                             </button>
                                         </template>
                                     </div>
@@ -192,13 +207,13 @@
             <div x-show="showModalResult" x-transition.duration.500ms
                 class="relative min-h-screen flex items-center justify-center p-4">
                 <div @click.stop x-trap.noscroll.inert="showModalResult"
-                    class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-12 overflow-y-auto">
+                    class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-6 lg:p-12 overflow-y-auto">
                     <div class="flex flex-col space-y-10 justify-center items-center bg-white rounded-3xl">
                         <p id="resultTitle" class="block text-center text-xl lg:text-4xl text-black "
                             x-text="i18n.scoreTexts[Math.floor((score/20))]"></p>
                         <div id="resultStars" class="flex flex-row space-x-5 space-x-reverse justify-start items-start">
                             <template x-for="i in 5" x-key="i">
-                                <svg :class="i*20<=score ? 'correct fill-yellow-300' : 'wrong fill-slate-400'"
+                                <svg :class="i*20<=score ? 'correct fill-yellow-300' : 'wrong fill-slate-300'"
                                     class="w-8 h-8 lg:w-12 lg:h-12" viewBox="0 0 84 81" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -210,56 +225,79 @@
                             class="flex flex-col w-full space-y-6 justify-start items-center">
                             <div x-show="game?.userInput?.trim?.().length"
                                 class="flex flex-col w-full space-y-6 justify-start items-center">
-                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full" x-text="i18n.your_answer">إجابتك:
+                                <div class="text-xl lg:text-2xl text-teal-700 text-right w-full"
+                                    x-text="i18n.your_answer">إجابتك:
                                 </div>
-                                <div class="bg-gray-200 rounded-xl w-full border-2 border-dashed border-gray-600 p-4" dir="rtl">
+                                <div class="bg-gray-200 rounded-xl w-full border-2 border-dashed border-gray-600 p-4"
+                                    dir="rtl">
                                     <div x-text="game.userInput" class="text-2xl lg:text-3xl text-black"></div>
                                 </div>
                             </div>
-                            <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full" x-text="i18n.the_answer">الإجابة الصحيحة:
+                            <div class="text-xl lg:text-2xl text-teal-700 text-right w-full" x-text="i18n.the_answer">
+                                الإجابة الصحيحة:
                             </div>
-                            <div class="bg-green-200 rounded-xl w-full border-2 border-dashed border-green-600 p-4" dir="rtl">
+                            <div class="bg-green-200 rounded-xl w-full border-2 border-dashed border-green-600 p-4"
+                                dir="rtl">
                                 <div x-text="game.current?.answer" class="text-2xl lg:text-3xl text-teal-700"></div>
                             </div>
-                            <button x-show="!showResultDetails" @click.stop="showResultDetails=true" x-transition
-                                class="flex flex-row space-x-2 space-x-reverse justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400">
-                                <p class="block text-center text-xl lg:text-4xl text-white" x-text="i18n.show_details">إظهار التفاصيل</p>
-                            </button>
-                            <div x-show="showResultDetails" x-transition
-                                class="flex flex-col w-full space-y-6 justify-start items-center">
-                                <div class="text-xl lg:text-2xl text-teal-700 underline text-right w-full" x-text="i18n.details">تفاصيل:
+                            <div class="w-full flex flex-col" x-data="{answerDetailExpanded:false}">
+                                <div class="text-lg lg:text-xl text-teal-700 text-right w-full mb-8"
+                                    x-text="i18n.details">تفاصيل:
                                 </div>
-                                <template x-for="remark in remarks" x-key="remark">
-                                    <div x-show="remark[0][0] && remark[0]?.[1] || remark[0][0] && !remark[0]?.[1] && !remark?.[1] || remark[0][0] && !remark[0]?.[1] && remark?.[1]" dir="rtl"
-                                        class="bg-gray-100 rounded-xl w-full border-2 border-dashed border-gray-400 p-4">
-                                        <div x-show="remark[0][0] && remark[0]?.[1]"
-                                            class="text-2xl lg:text-3xl text-teal-700">
-                                            <span x-text="remark[0][0]" class="text-red-600"></span> ←
-                                            <span x-text="remark[0]?.[1]" class="text-green-600"></span>
-                                        </div>
-                                        <div x-show="remark[0][0] && !remark[0]?.[1] && !remark?.[1]"
-                                            class="text-2xl lg:text-3xl text-teal-700">
-                                            <span x-text="remark[0][0]" class="text-black"></span>
-                                        </div>
-                                        <div x-show="remark[0][0] && !remark[0]?.[1] && remark?.[1]"
-                                            class="text-2xl lg:text-3xl text-teal-700">
-                                            <span x-text="remark[0][0]" class="text-black"></span> :
-                                            <span x-text="remark[1]" class="text-2xl lg:text-3xl text-teal-700"></span>
+                                <div class="bg-green-50 rounded-xl w-full border-2 border-dashed border-green-400 p-4"
+                                    dir="rtl">
+                                    <div id="answser_detail" x-html="game.correct?.[2]"
+                                        class="text-2xl lg:text-3xl"></div>
+                                </div>
+                                <div class="relative w-full">
+                                    <div x-show="! answerDetailExpanded"
+                                        class="absolute inset-0 flex justify-start items-end bg-gradient-to-t from-white pointer-events-none">
+                                    </div>
+
+                                    <div x-show="answerDetailExpanded" x-collapse.min.80px="">
+                                        <div x-transition
+                                            class="flex flex-col w-full space-y-6 justify-start items-center">
+                                            <template x-for="remark in remarks" x-key="remark">
+                                                <div x-show="remark[0][0] && remark[0]?.[1] || remark[0][0] && !remark[0]?.[1] && !remark?.[1] || remark[0][0] && !remark[0]?.[1] && remark?.[1]"
+                                                    dir="rtl" class="w-full">
+                                                    <div x-show="remark[0][0] && !remark[0]?.[1] && !remark?.[1]"
+                                                        class="text-xl lg:text-2xl text-teal-700 -mb-2">
+                                                        <span x-text="remark[0][0]+'،'" class="text-black"></span>
+                                                    </div>
+                                                    <div x-show="remark[0][0] && remark[0]?.[1]"
+                                                        class="text-2xl lg:text-3xl text-teal-700 border-2 border-dashed border-gray-400 p-4 bg-gray-100 rounded-xl ">
+                                                        <span x-text="remark[0][0]" class="text-red-600"></span> ←
+                                                        <span x-text="remark[0]?.[1]" class="text-green-600"></span>
+                                                    </div>
+                                                    <div x-show="remark[0][0] && !remark[0]?.[1] && remark?.[1]"
+                                                        class="text-2xl lg:text-3xl text-teal-700 border-2 border-dashed border-gray-400 p-4 bg-gray-100 rounded-xl ">
+                                                        <span x-text="remark[0][0]" class="text-black"></span> :
+                                                        <span x-text="remark[1]"
+                                                            class="text-2xl lg:text-3xl text-teal-700"></span>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </div>
-                                </template>
+                                </div>
+                                <button x-show="!showResultDetails" @click.stop="showResultDetails=true; answerDetailExpanded=true;"
+                                    x-transition
+                                    class="flex flex-row space-x-2 space-x-reverse justify-center items-center px-4 py-1 lg:px-6 lg:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400 mt-[4px]">
+                                    <p class="block text-center text-xl lg:text-3xl text-teal-700"
+                                        x-text="i18n.show_details">إظهار المزيد</p>
+                                </button>
                             </div>
+
                         </div>
-                        <div id="resultButtons">
-                            <button @click.stop="game.nextGame"
-                                class="flex flex-row space-x-2 space-x-reverse justify-center items-center  px-4 py-1 lg:px-6 lg:py-3 bg-teal-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
-                                <p class="block text-center text-xl lg:text-4xl text-white" x-text="i18n.continue">واصل</p>
-                                <svg width="20" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path class="fill-white"
-                                        d="M38 0C38.4899 6.46217e-05 38.9627 0.179913 39.3287 0.505435C39.6948 0.830956 39.9287 1.27951 39.986 1.76602L40 2.00002V15.0001C40.0001 16.7903 39.3144 18.5125 38.0839 19.8126C36.8533 21.1127 35.1714 21.892 33.384 21.9902L33 22.0002H6.83L13.414 28.5862C13.7584 28.9306 13.9652 29.3888 13.9958 29.8749C14.0263 30.361 13.8785 30.8415 13.58 31.2263L13.414 31.4143C13.0696 31.7586 12.6114 31.9655 12.1254 31.9961C11.6393 32.0266 11.1588 31.8788 10.774 31.5803L10.586 31.4143L0.586 21.4142C0.515942 21.3444 0.451101 21.2695 0.392 21.1902L0.25 20.9702L0.142 20.7422L0.072 20.5322L0.0219998 20.2982L0.0079999 20.1782L0 20.0002L0.00600004 19.8502L0.04 19.5982L0.0999999 19.3762L0.188 19.1542L0.292 18.9582L0.42 18.7742L0.586 18.5862L10.586 8.58608C10.9459 8.22738 11.4289 8.01912 11.9368 8.00361C12.4447 7.9881 12.9394 8.1665 13.3206 8.50257C13.7017 8.83864 13.9406 9.30718 13.9888 9.81303C14.037 10.3189 13.8908 10.8241 13.58 11.2261L13.414 11.4141L6.83 18.0002H33C33.7455 18.0002 34.4642 17.7226 35.0162 17.2217C35.5682 16.7207 35.9139 16.0321 35.986 15.2901L36 15.0001V2.00002C36 1.46958 36.2107 0.960868 36.5858 0.585792C36.9609 0.210716 37.4696 0 38 0V0Z" />
-                                </svg>
-                            </button>
-                        </div>
+                        <button @click.stop="game.nextGame"
+                            class="flex flex-row space-x-2 space-x-reverse shadow-sm justify-center items-center px-4 py-1 lg:px-6 lg:py-3 bg-teal-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                            <p class="block text-center text-xl lg:text-3xl text-white" x-text="i18n.continue">واصل
+                            </p>
+                            <svg width="20" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path class="fill-white"
+                                    d="M38 0C38.4899 6.46217e-05 38.9627 0.179913 39.3287 0.505435C39.6948 0.830956 39.9287 1.27951 39.986 1.76602L40 2.00002V15.0001C40.0001 16.7903 39.3144 18.5125 38.0839 19.8126C36.8533 21.1127 35.1714 21.892 33.384 21.9902L33 22.0002H6.83L13.414 28.5862C13.7584 28.9306 13.9652 29.3888 13.9958 29.8749C14.0263 30.361 13.8785 30.8415 13.58 31.2263L13.414 31.4143C13.0696 31.7586 12.6114 31.9655 12.1254 31.9961C11.6393 32.0266 11.1588 31.8788 10.774 31.5803L10.586 31.4143L0.586 21.4142C0.515942 21.3444 0.451101 21.2695 0.392 21.1902L0.25 20.9702L0.142 20.7422L0.072 20.5322L0.0219998 20.2982L0.0079999 20.1782L0 20.0002L0.00600004 19.8502L0.04 19.5982L0.0999999 19.3762L0.188 19.1542L0.292 18.9582L0.42 18.7742L0.586 18.5862L10.586 8.58608C10.9459 8.22738 11.4289 8.01912 11.9368 8.00361C12.4447 7.9881 12.9394 8.1665 13.3206 8.50257C13.7017 8.83864 13.9406 9.30718 13.9888 9.81303C14.037 10.3189 13.8908 10.8241 13.58 11.2261L13.414 11.4141L6.83 18.0002H33C33.7455 18.0002 34.4642 17.7226 35.0162 17.2217C35.5682 16.7207 35.9139 16.0321 35.986 15.2901L36 15.0001V2.00002C36 1.46958 36.2107 0.960868 36.5858 0.585792C36.9609 0.210716 37.4696 0 38 0V0Z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -278,7 +316,8 @@
                 <div @click.stop x-trap.noscroll.inert="showModalSettings"
                     class="relative max-w-2xl w-full bg-white rounded-xl shadow-lg p-4 overflow-y-auto">
                     <div class="px-4 py-3 text-right sm:px-6" x-id="['settings']">
-                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700" x-text="i18n.settings_lang">
+                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700"
+                            x-text="i18n.settings_lang">
                             لغة الواجهة
                         </label>
                         <select x-model="lang" :id="$id('settings')"
@@ -292,7 +331,8 @@
                         </select>
                     </div>
                     <div class="px-4 py-3 text-right sm:px-6" x-id="['settings']">
-                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700" x-text="i18n.settings_level">
+                        <label :for="$id('settings')" class="block text-md font-medium text-gray-700"
+                            x-text="i18n.settings_level">
                             المستوى
                         </label>
                         <select x-model="settings.level" :id="$id('settings')"
@@ -387,7 +427,8 @@
                         </ul>
                         </p>
                         <p class="text-lg lg:text-2xl">
-                            يتم تطوير المشروع ضمن فعاليات هاكاثون اللغة العربية "<b>برمجان</b>" المنظم من طرف مجمع الملك سلمان العالمي للغة العربية.
+                            يتم تطوير المشروع ضمن فعاليات هاكاثون اللغة العربية "<b>برمجان</b>" المنظم من طرف مجمع الملك
+                            سلمان العالمي للغة العربية.
                         </p>
                         <p class="text-lg lg:text-2xl">
                             وسيتم نشر أدواته للمقارنة والتحليل تحت رخصة حرة مع صدور النسخة الأولى له.
