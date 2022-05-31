@@ -87,8 +87,7 @@
 
                         <div
                             class="w-full flex flex-col-reverse lg:flex-row space-y-4 space-y-reverse lg:space-x-12 lg:space-x-reverse flex-1 lg:flex-initial">
-                            <div class="flex-1 flex flex-col space-y-6 justify-center"
-                                :class="isSafari && game.image!==null && game.image.length ? 'mt-[-240px] lg:mt-0' : ''">
+                            <div class="flex-1 flex flex-col space-y-6 justify-center">
                                 <div id="question" class="w-full" dir="ltr"
                                     x-show="game.current.audio || game.current.q2 || game.current.tts">
                                     <button @click.stop="readWord(game.current.tts)"
@@ -184,12 +183,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex-1 w-full h-full" x-show="game.image!==null && game.image.length">
-                                <div id="photo" x-show="!game.imageIsLoading" class="w-full h-full"
-                                    :class="isSafari ? 'flex lg:block' : ''">
-                                    <img x-init="$el.onload = () => game.imageIsLoading = false;"
-                                        class="bg-teal-500 border-8 border-white rounded-4 object-cover max-w-full"
-                                        :class="isSafari ? 'mb-[260px] mt-0 ml-auto mr-auto lg:m-auto ' : 'max-h-full absolute top-0 left-0 right-0 m-auto'"
+                            <div id="imageContainer" class="flex justify-center flex-1 w-full h-full" x-show="game.image!==null && game.image.length">
+                                <div id="photo" x-show="!game.imageIsLoading" class="flex lg:block px-8 lg:px-0 absolute lg:relative">
+                                    <img x-init="$el.onload = () => game.imageIsLoading = false;" :style="(game.imageSize && 'height:'+game.imageSize+'px;')+' width: auto'"
+                                        class="bg-teal-500 border-8 border-white rounded-4 object-cover max-w-full mt-0 ml-auto mr-auto lg:m-auto"
                                         x-bind:src="game.image" />
                                 </div>
                             </div>

@@ -1,4 +1,9 @@
-var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+window.addEventListener('resize', () => {
+    calcImageSize()
+});
+function calcImageSize() {
+    window.app.game.imageSize = window.innerWidth < 1024 ? document.getElementById('imageContainer')?.clientHeight ?? 0 : 0;
+}
 var audio = new Audio("../assets/click.mp3");
 function playClickAudio() {
     audio.currentTime = 0;
@@ -92,7 +97,12 @@ document.addEventListener('alpine:init', () => {
             async init() {
                 window.app = this;
 
-                Alpine.nextTick(() => window.app.updateInterface())
+
+                Alpine.nextTick(() => {
+                    window.app.updateInterface();
+                    calcImageSize();
+                })
+
                 this.$watch('lang', value => {
                     window.app.updateInterface()
                     window.app.game.nextGame();
@@ -129,6 +139,7 @@ document.addEventListener('alpine:init', () => {
                 userInput: this.$persist(''),
                 image: this.$persist(null),
                 imageIsLoading: true,
+                imageSize: 0,
                 correct: [],
                 choices: this.$persist([]),
                 current: this.$persist(null),
@@ -224,7 +235,12 @@ document.addEventListener('alpine:init', () => {
                             }
                             if (tmp_img === window.app.game.image) window.app.game.imageIsLoading = false;
 
-                            Alpine.nextTick(() => window.app.animateGame().then(() => window.app.lock = false))
+                            Alpine.nextTick(() => {
+                                setTimeout(() => {
+                                    calcImageSize();
+                                }, 100);
+                                window.app.animateGame().then(() => window.app.lock = false)
+                            })
                         })
                     })
                 },

@@ -76,20 +76,20 @@ function pushGameScore(gameid, score){
 		window.app.playedGames.shift();
 
 	// Autoleveling according to the score
-	if( window.app.leveling >= 5 && averageScore(3) >= 80 ){
-		if(window.app.level < 8){
+	window.app.leveling ++;
+	if( window.app.leveling > 5) {
+        if(averageScore(3) >= 80 && window.app.level < 8){
 			window.app.level += 0.5;
 			console.log("Leveling up: "+window.app.level);
 			window.app.leveling = 0;
 		}
-	}else if(window.app.leveling >= 5 && averageScore(3) <= 20){
-		if(window.app.level > 2){
-			window.app.level -= 0.5;
-			console.log("Leveling down: "+window.app.level);
-			window.app.leveling = 0;
-		}
-	}
-	window.app.leveling ++;
+        else if(averageScore(3) <= 20 && window.app.level > 2){
+            window.app.level -= 0.5;
+            console.log("Leveling down: "+window.app.level);
+            window.app.leveling = 0;
+        }
+    }
+
 	return window.app.playedGames.push([gameid, score]);
 }
 
@@ -107,8 +107,7 @@ function averageScore(interval){ // returns the average of score during the last
 
 function normalizeTime(text) {
 
-	return text.replace('الساعة ','').replace('ربع','خمس عشرة دقيقة').replace('نصف', 'ثلاثون دقيقة').replace(' دقيقة', '').replace(' دقائق', '');
-
+	return text.replace('الساعة ','').replace('وربع ','و خمس عشرة دقيقة ').replace('نصف', 'ثلاثون دقيقة').replace(' دقيقة', '').replace(' دقائق', '');
 }
 
 /* -----------------------------------------------------------------------------
@@ -415,8 +414,13 @@ function printDiffs(diffs, wordset){
 
 			}else if(part[0] == -1){
 
-					if(!("hidden" in part))
-						revision[2] += '<span '+note+' style="color:red;background:#eee;">'+part[1]+'</span>';
+				/* //Original
+				if(!("hidden" in part) ) // to revise && ( ( (rj+1) in word) && word[rj+1][0] = 1 )
+					revision[2] += '<span '+note+' style="color:red;background:#eee;">'+part[1]+'</span>';
+					*/
+				//modified
+				if(!("hidden" in part)  && (((rj+1) in word) && word[rj+1][0] == 1) ) // to revise &&
+					revision[2] += '<span '+note+' style="color:red;background:#eee;">'+part[1]+'</span>';
 
 			}else if(part[0] == 1){
 				revision[2] += '<span '+note+' style="color:green;background:#eee;">'+part[1]+'</span>';
@@ -445,6 +449,7 @@ function printDiffs(diffs, wordset){
 
 	return revision;
 }
+
 
 /* -----------------------------------------------------------------------------
 	 Adds spelling remarks and advises to the wordset
@@ -497,7 +502,7 @@ function parse(wordset){
 								});
 
 							}else if( "exclude" in rule[3] ){
-									if("word" in rule[3]["exclude"] && word["string"]["valid"].match(rule[3]["exclude"]["regex"])){
+									if( (rule[3]["exclude"] == "word") && word["string"]["valid"].match(rule[3]["regex"][0])){
 
 										pushRemark(word[ipart-1], "مستثناة");
 									}
@@ -518,6 +523,7 @@ function parse(wordset){
 					remarksArray.push([[rule[2]]]);
 				}
 		});
+
 		// waw example
 		$.each(ruleset['separated'], function(irule, rule) {
 			if( (word[0][0] == 0 && (1 in word) && word[1][0] == 0)
