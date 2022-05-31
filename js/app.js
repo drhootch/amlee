@@ -56,6 +56,7 @@ var languages = {
         show_details: 'إظهار المزيد',
         details: 'تفاصيل:',
         continue: 'واصل',
+        info: 'فائدة:',
         scoreTexts: [
             "لم تُوفّق!",
             "يمكنك تقديم أفضل!",
@@ -81,6 +82,7 @@ var languages = {
         show_details: 'Show more',
         details: 'Details',
         continue: 'Continue',
+        info: 'Tip',
         scoreTexts: [
             "It was not enough!",
             "You can do better!",
@@ -212,6 +214,7 @@ document.addEventListener('alpine:init', () => {
                     }
                 },
                 async nextGame(animateOut = true, gameid) {
+                    if (window.app.animating) return;
                     window.app.lock = true;
                     window.app.showModalResult = false;
                     window.app.animateGame(false, !animateOut).then(() => {
@@ -277,7 +280,7 @@ document.addEventListener('alpine:init', () => {
                 Alpine.nextTick(() => {
                     const elemsSpan = Array.from(document.querySelectorAll("#answser_detail>span"));
                     elemsSpan.forEach((elem, index) => {
-                        elem.style.background= "unset";
+                        elem.style.background = "unset";
                     });
                     const elems = Array.from(document.getElementsByClassName("tooltip"));
                     elems.forEach((elem, index) => {
@@ -352,29 +355,38 @@ document.addEventListener('alpine:init', () => {
             },
             keypressed(e) {
                 if (e.altKey) {
-                    if (e.code === "KeyQ") {
-                        window.app.game.nextGame(true, 0);
-                    }
-                    else if (e.code === "KeyW") {
-                        window.app.game.nextGame(true, 1);
-                    }
-                    else if (e.code === "KeyD" || e.code === "KeyD") {
-                        window.app.game.nextGame(true, 2);
-                    }
-                    else if (e.code === "KeyR") {
-                        window.app.game.nextGame(true, 3);
-                    }
-                    else if (e.code === "KeyT") {
-                        window.app.game.nextGame(true, 4);
-                    }
-                    else if (e.code === "KeyY") {
-                        window.app.game.nextGame(true, 5);
-                    }
-                    else if (e.code === "KeyU") {
+                    if (e.code === "KeyA") {
                         window.app.game.nextGame(true, 6);
                     }
-                    else if (e.code === "KeyI") {
+                    else if (e.code === "KeyS") {
+                        window.app.game.nextGame(true, 4);
+                    }
+                    else if (e.code === "KeyD") {
+                        window.app.game.nextGame(true, 0);
+                    }
+                    else if (e.code === "KeyF") {
+                        window.app.game.nextGame(true, 1);
+                    }
+                    else if (e.code === "KeyG") {
                         window.app.game.nextGame(true, 7);
+                    }
+                    else if (e.code === "KeyH") {
+                        window.app.game.nextGame(true, 3);
+                    }
+                    else if (e.code === "KeyJ") {
+                        window.app.game.nextGame(true, 2);
+                    }
+                    else if (e.code === "KeyK") {
+                        window.app.game.nextGame(true, 10);
+                    }
+                    else if (e.code === "KeyL") {
+                        window.app.game.nextGame(true, 9);
+                    }
+                    else if (e.code === "KeyZ") {
+                        window.app.game.nextGame(true, 8);
+                    }
+                    else if (e.code === "KeyX") {
+                        window.app.game.nextGame(true, 5);
                     }
                     else if (e.code === "KeyN") {
                         window.app.game.nextGame();
@@ -388,6 +400,7 @@ document.addEventListener('alpine:init', () => {
             //Animations
             animateResult() {
                 return new Promise((resolve, reject) => {
+                    window.app.animating = true;
                     var tl = anime.timeline({
                         duration: 800
                     });
@@ -424,8 +437,11 @@ document.addEventListener('alpine:init', () => {
                         delay: function (el, i, l) {
                             return i * 100;
                         },
-                    }, "-=600")
-                    tl.finished.then(resolve);
+                    }, "-=600");
+                    tl.finished.then(() => {
+                        window.app.animating = false;
+                        resolve()
+                    });
                 })
             },
             animateShake(targets) {
@@ -466,6 +482,7 @@ document.addEventListener('alpine:init', () => {
                     if (document.getElementById('slots'))
                         document.getElementById('slots').style.transform = null;
                     window.app.waitingAnimation = false;
+                    window.app.animating = true;
                     var tl = anime.timeline({
                         direction: animateIn ? 'normal' : 'reverse',
                         duration: 800
@@ -533,7 +550,10 @@ document.addEventListener('alpine:init', () => {
                             return i * 50;
                         },
                     }, '-=600')
-                    tl.finished.then(resolve);
+                    tl.finished.then(() => {
+                        window.app.animating = false;
+                        resolve()
+                    });
                 })
             },
             updateInterface() {
